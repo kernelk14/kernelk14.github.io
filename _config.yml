@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 theme: jekyll-theme-minimal
 author: kernelk14
+=======
+theme: jekyll-theme-midnight
+>>>>>>> origin/master
 title: "kernelk14's site"
 description: "A site that does nothing"
