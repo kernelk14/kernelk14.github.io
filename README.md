@@ -6,7 +6,7 @@
 + [slug](./repos/slug/README.md)
 + [dq](./repos/dq/README.md)
 + [borlang-rewrite](./repos/borlang-rewrite/README.md)
-
++ [initproject](./repos/initproject/README.md)
 #### Socials
 - [GitHub](https://github.com/kernelk14)
 - [Gitlab](https://gitlab.com/kernelk14)
