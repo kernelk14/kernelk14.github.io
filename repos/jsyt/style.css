@@ -1,0 +1,25 @@
+body {
+    background-color: #181818;
+}
+h1, label, h2 {
+    font-family: "Consolas";
+    color: #98971a;
+}
+p {
+    font-family: "Consolas";
+    color: #ebdbb2;
+}
+button {
+    border: solid;
+    border-color: #d7992a;
+    border-radius: 5px;
+    background-color: #fabd2f;
+    color: #282828;
+}
+input {
+    border: solid;
+    border-color: #689d6a;
+    background-color: #8ec07c;
+    color: #282828;
+    font-family: "Arial";
+}

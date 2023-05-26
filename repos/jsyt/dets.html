@@ -1,0 +1,80 @@
+<title>Youtube Video Details</title>
+<script src="https://apis.google.com/js/api.js"></script>
+<script>
+  /**
+   * Sample JavaScript code for youtube.videos.list
+   * See instructions for running APIs Explorer code samples locally:
+   * https://developers.google.com/explorer-help/code-samples#javascript
+   */
+
+  function authenticate() {
+    return gapi.auth2.getAuthInstance()
+        .signIn({scope: "https://www.googleapis.com/auth/youtube.readonly"})
+        .then(function() { console.log("Sign-in successful"); },
+              function(err) { console.error("Error signing in", err); });
+  }
+  function loadClient() {
+    gapi.client.setApiKey("AIzaSyCbYY_QrybRbZ2v9NueSCJNlzxXJ2O63ho");
+    return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
+        .then(function() { console.log("GAPI client loaded for API"); },
+              function(err) { console.error("Error loading GAPI client for API", err); });
+  }
+  // Make sure the client is loaded and sign-in is complete before calling this method.
+  function execute() {
+    var url_data = document.getElementById("yturl").value
+    // console.log(url_data)
+    var url_split = url_data.split("=")
+    
+    return gapi.client.youtube.videos.list({
+      "part": [
+        "snippet,contentDetails,statistics"
+      ],
+      "id": [
+        // "VKy2h7XKPVE"
+        url_split[1]
+      ]
+    })
+        .then(function(response) {
+                // Handle the results here (response.result has the parsed body).
+                console.log("Response", response);
+                console.log("\n\n\n");
+                console.log("----------------------------------------------------------\n");
+                console.log("Video Information:", response.result['items']['0']['snippet']);
+                // Here we define the main info about the video
+                var id = response.result['items']['0']['id'];
+                var title = response.result['items']['0']['snippet']['title']
+                var desc = response.result['items']['0']['snippet']['description']
+                var chanId = response.result['items']['0']['snippet']['channelId']
+                // Here we define the stats for the video
+                var likes = response.result['items']['0']['statistics']['likeCount']
+                var comm = response.result['items']['0']['statistics']['commentCount']
+                var view = response.result['items']['0']['statistics']['viewCount']
+                console.log(`Title: ${title}\nDescription:\n${desc}`)
+                console.log(`Statistics:\n\tLikes: ${likes}\n\tComments: ${comm}\n\tViews: ${view}`)
+                console.log(`Youtube Channel: https://youtube.com/channel/${chanId}`)
+                console.log(`YouTube Video link: https://youtube.com/watch?v=${id}`)
+            },
+              function(err) { console.error("Execute error", err); });
+  }
+  gapi.load("client:auth2", function() {
+    gapi.auth2.init({client_id: "560745334287-sha6kkvkvpf0cms24gmd9ha25gu0bpmp.apps.googleusercontent.com"});
+  });
+</script>
+<link rel="stylesheet" href="style.css">
+<body>
+  <h1 align="center">Welcome!</h1>
+<br>
+<p align="center">This is a tool to retrieve Youtube video informaton</p>
+<br>
+<h2>Step 1: Open Developer Tools (Press F12)</h2>
+<br>
+<h2>Step 2: Authorize your account</h2>
+<button onclick="authenticate().then(loadClient)">Authorize and Load</button>
+<br>
+<h2>Step 3: Enter the link of the video then press 'Execute'</h2>
+<label for="yturl">Enter the Youtube video link below:</label>
+<br>
+<input type="url" id="yturl" name="Youtube Video Link">
+<button onclick="execute()">execute</button>
+<br>
+</body>
