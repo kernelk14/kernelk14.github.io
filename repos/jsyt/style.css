@@ -1,7 +1,7 @@
 body {
     background-color: #181818;
 }
-h1, label, h2 {
+h1, label, h2, h3 {
     font-family: "Consolas";
     color: #98971a;
 }
@@ -22,4 +22,8 @@ input {
     background-color: #8ec07c;
     color: #282828;
     font-family: "Arial";
+}
+a {
+    font-family: "Consolas";
+    color: #d79921;
 }
