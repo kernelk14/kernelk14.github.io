@@ -16,7 +16,10 @@
   function loadClient() {
     gapi.client.setApiKey("AIzaSyCbYY_QrybRbZ2v9NueSCJNlzxXJ2O63ho");
     return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
-        .then(function() { console.log("GAPI client loaded for API"); },
+        .then(function() { 
+          console.log("GAPI client loaded for API");
+          document.getElementById("auth_notify").innerHTML = "Authentication Successful"
+        },
               function(err) { console.error("Error loading GAPI client for API", err); });
   }
   // Make sure the client is loaded and sign-in is complete before calling this method.
@@ -85,6 +88,8 @@
 <br>
 <h2>Step 2: Authorize your account</h2>
 <button onclick="authenticate().then(loadClient)">Authorize and Load</button>
+<br>
+<p id="auth_notify"></p>
 <br>
 <h2>Step 3: Enter the link of the video then press 'Execute'</h2>
 <label for="yturl">Enter the Youtube video link below:</label>
