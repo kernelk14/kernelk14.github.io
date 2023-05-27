@@ -5,6 +5,11 @@ h1, label, h2, h3 {
     font-family: "Consolas";
     color: #98971a;
 }
+h3 .desc_yt {
+    background-color: #1e1e1f;
+    font-family: "Consolas";
+    color: #98971a;
+}
 p {
     font-family: "Consolas";
     color: #ebdbb2;

@@ -59,6 +59,7 @@
                 
                 // Here we write the result in a html form.
                 const win = window.open()
+                win.document.write(`<title>Results</title>`)
                 win.document.write(`<link rel="stylesheet" href="style.css">`)
                 win.document.write(`<h1 align="center">Results</h1>`)
                 win.document.write(`<br>`)
@@ -67,9 +68,10 @@
                 win.document.write(`<h3>Youtube video link: <a href="https://youtube.com/watch?v=${id}">https://youtube.com/watch?v=${id}</a></h3>`)
                 win.document.write(`<h3>Youtube video creator: <a href="https://youtube.com/channel/${chanId}">https://youtube.com/channel/${chanId}</a></h3>`)
                 win.document.write(`<br>`)
-                win.document.write(`<h3>`)
+                win.document.write("<h3>Description:</h3>")
+                win.document.write(`<h3 id="desc_yt">`)
                 win.document.write(desc)
-                win.document.write(`</h3>`)
+                win.document.write(`</h2>`)
                 win.document.write(`<br>`)
                 win.document.write(`<h3>Statistics:\n\t${likes} likes\n\t${comm} comments\n\t${view} views`)
                 win.document.write(`<br>`)
