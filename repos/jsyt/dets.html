@@ -23,7 +23,6 @@
               function(err) { console.error("Error loading GAPI client for API", err); });
   }
   // Make sure the client is loaded and sign-in is complete before calling this method.
-  
   function execute() {
     var url_data = document.getElementById("yturl").value
     // console.log(url_data)
@@ -99,7 +98,10 @@
                 // var commy2 = commy[for(let i = 0; i < commy; i++)]['snippet']['topLevelComment']['textDisplay']
                 let i = 0;
                 console.log("Comments:\n")
+<<<<<<< HEAD
                 const win = window.open()
+=======
+>>>>>>> db0948df4eaef400b2f13f51db3f21f2b4f6416a
                 win.document.write("<h3>Comments:</h3>")
                 while (i < commy.length) {
                   var co = commy[i]['snippet']['topLevelComment']['snippet']['textOriginal']
