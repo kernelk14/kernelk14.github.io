@@ -76,7 +76,7 @@
                 win.document.write(`<h3>Statistics:\n\t${likes} likes\n\t${comm} comments\n\t${view} views`)
                 win.document.write(`<br>`)
                 
-                return comms()
+                win.document.write(comms())
           },
               function(err) { console.error("Execute error", err); });
   }
@@ -105,8 +105,8 @@
                   var co_name = commy[i]['snippet']['topLevelComment']['snippet']['authorDisplayName']
                   
                   console.log(`${co_name} : ${co}`)
-                  win.document.write(`<h4><a href="">${co_name}</a> : ${co}</h4>`)
-
+                  // win.document.write(`<h4><a href="">${co_name}</a> : ${co}</h4>`)
+                  return `${co_name} : ${co}`
 
                   i++
                 }
