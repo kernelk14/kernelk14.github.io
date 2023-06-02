@@ -23,6 +23,7 @@
               function(err) { console.error("Error loading GAPI client for API", err); });
   }
   // Make sure the client is loaded and sign-in is complete before calling this method.
+  
   function execute() {
     var url_data = document.getElementById("yturl").value
     // console.log(url_data)
@@ -58,7 +59,7 @@
                 console.log(`YouTube Video link: https://youtube.com/watch?v=${id}`)
                 
                 // Here we write the result in a html form.
-                const win = window.open()
+                const win = window.open()              
                 win.document.write(`<title>Results</title>`)
                 win.document.write(`<link rel="stylesheet" href="style.css">`)
                 win.document.write(`<h1 align="center">Results</h1>`)
@@ -75,7 +76,42 @@
                 win.document.write(`<br>`)
                 win.document.write(`<h3>Statistics:\n\t${likes} likes\n\t${comm} comments\n\t${view} views`)
                 win.document.write(`<br>`)
+                
+                return comms()
           },
+              function(err) { console.error("Execute error", err); });
+  }
+  function comms() {
+    var dat = document.getElementById('yturl').value
+    var spl = dat.split("=")
+    return gapi.client.youtube.commentThreads.list({
+      "part": [
+        "snippet,replies"
+      ],
+      "videoId": spl[1]
+    })
+        .then(function(resp) {
+                // Handle the results here (response.result has the parsed body).
+                console.log("Comment Response", resp);
+                var commy = resp.result['items']
+                console.log(`${commy}`)
+                console.log(commy.length)
+                // var commy2 = commy[for(let i = 0; i < commy; i++)]['snippet']['topLevelComment']['textDisplay']
+                let i = 0;
+                console.log("Comments:\n")
+                const win = window.open()
+                win.document.write("<h3>Comments:</h3>")
+                while (i < commy.length) {
+                  var co = commy[i]['snippet']['topLevelComment']['snippet']['textOriginal']
+                  var co_name = commy[i]['snippet']['topLevelComment']['snippet']['authorDisplayName']
+                  
+                  console.log(`${co_name} : ${co}`)
+                  win.document.write(`<h4><a href="">${co_name}</a> : ${co}</h4>`)
+
+
+                  i++
+                }
+              },
               function(err) { console.error("Execute error", err); });
   }
   gapi.load("client:auth2", function() {
