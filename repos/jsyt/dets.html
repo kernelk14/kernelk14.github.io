@@ -76,9 +76,8 @@
                 win.document.write(`<br>`)
                 win.document.write(`<h3>Statistics:\n\t${likes} likes\n\t${comm} comments\n\t${view} views`)
                 win.document.write(`<br>`)
-                msg = msg
-                win.document.write(`<h4>${msg}</h4>`)
-          },
+                          
+        },
               function(err) { console.error("Execute error", err); });
   }
   function comms() {
@@ -99,15 +98,14 @@
                 // var commy2 = commy[for(let i = 0; i < commy; i++)]['snippet']['topLevelComment']['textDisplay']
                 let i = 0;
                 console.log("Comments:\n")
-                win = window.open()
-                win.document.write("<h3>Comments:</h3>")
+                document.write("<h3>Comments:</h3>")
                 while (i < commy.length) {
                   var co = commy[i]['snippet']['topLevelComment']['snippet']['textOriginal']
                   var co_name = commy[i]['snippet']['topLevelComment']['snippet']['authorDisplayName']
                   
                   console.log(`${co_name} : ${co}`)
                   // win.document.write(`<h4><a href="">${co_name}</a> : ${co}</h4>`)
-                  msg = `${co_name} : ${co}`
+                  document.write(`<h4><a href="">${co_name}</a> : ${co}</h4>`)
 
                   i++
                 }
