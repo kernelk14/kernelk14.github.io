@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MVP test</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+        
+        <style>
+            .navbar {
+                background-color: #5E503B60;
+            }
+            .desc {
+                background-color: #efefef20;
+            }
+
+            body {
+                background-image: url("./images/bg3.jpg");
+                background-size: cover;
+                background-attachment: scroll;
+                background-repeat: no-repeat;
+            }
+        </style>
+        
+    </head>
+    <body>
+        <header class="mx-auto top-0 sticky z-1">
+            <nav class="navbar flex p-3 gap-5 backdrop-blur-sm shadow-lg rounded-xl">
+                <p class="name text-2xl text-green-500 font-bold mt-1.5">Khyle Angelo Isaias</p>
+                <a href="#"><p class="text-white hover:bg-[#228b2240] hover:border-green-500 p-3 rounded">Home</p></a>
+                <a href="#"><p class="text-white hover:bg-[#228b2240] hover:border-green-500 p-3 rounded">About</p></a>
+                <a href="https://github.com/kernelk14"><p class="text-white hover:bg-[#228b2240] hover:border-green-500 p-3 rounded">Github</p></a>
+            </nav>
+        </header>
+        <div class="flex justify-items-center rounded text-center p-3 m-auto w-100 h-80">
+            <div class="desc backdrop-blur-xs mt-6 mb-4 me-4 ms-4 rounded-xl border-green-500">
+                <h2 class="text-[#efefef] text-3xl font-bold mt-6 mb-6">Hello World!</h2>
+                <p class="text-[#efefef] text-xl mb-6 me-6 ms-6">I am Khyle Angelo Isaias, 20 years old. I'm currently a Computer Science student.</p>
+            </div>
+        </div>
+        
+        <div class="flex justify-center rounded text-center p-3 m-auto">
+            <div class="desc backdrop-blur-xs mt-6 mb-4 me-4 ms-4 rounded-xl p-7 border-green-500">
+                <h2 class="text-[#efefef] text-3xl font-bold mt-6 mb-6">My Projects</h2>
+                <br />
+                <section>
+                    <a href="https://github.com/kernelk14/slug"><h3 class="table m-auto text-[#efefef] font-bold text-2xl hover:bg-[#228b2240] hover:border-green-500 p-2 rounded-xl">Slug</h3></a>
+                    <p class="text-[#efefef] text-2xl">A Stack-based Programming Language that transpiles to Rust.</p>
+                </section>
+                <br />
+                <section>
+                    <a href="https://github.com/kernelk14/ownstrap"><h3 class="table m-auto text-[#efefef] font-bold text-2xl hover:bg-[#228b2240] hover:border-green-500 p-2 rounded-xl">Ownstrap</h3></a>
+                    <p class="text-[#efefef] text-2xl">Making my own alternative to Bootstrap.</p>
+                </section>
+                <br />
+                <section>
+                    <a href="https://khyleisaias.github.io"><h3 class="table m-auto text-center text-[#efefef] font-bold text-2xl hover:bg-[#228b2240] hover:border-green-500 p-2 rounded-xl">Is it christmas?</h3></a>
+                    <p class="text-[#efefef] text-2xl">Just go into the page to see.</p>
+                </section>
+                <br />
+            </div>
+        </div>
+        
+        
+        
+    </body>
+</html>
