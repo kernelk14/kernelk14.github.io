@@ -2,6 +2,8 @@
 
 ### Check out all of my projects [here!!!](https://github.com/kernelk14?tab=repositories)
 
+Check out the [new site](./site-new.html) (it's unfinished)
+
 ### Latest Project
 [Youtube Video Information](./repos/jsyt/dets.html)
 
