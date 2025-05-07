@@ -1,0 +1,174 @@
+@font-face {
+  font-family: "Fira Sans Regular";
+  src: url(fonts/Fira_Sans/FiraSans-Regular.ttf);
+}
+
+@font-face {
+  font-family: "Fira Sans Bold";
+  src: url(fonts/Fira_Sans/FiraSans-Bold.ttf);
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url(fonts/Inter/Inter-VariableFont_opsz\,wght.ttf);
+}
+
+@font-face {
+  font-family: "Inter 24px Bold";
+  src: url(fonts/Inter/static/Inter_18pt-Bold.ttf);
+}
+
+@font-face {
+  font-family: "Inter 24px Italic";
+  src: url(fonts/Inter/static/Inter_18pt-Italic.ttf);
+}
+
+:root {
+  font-family: "Fira Sans Regular";
+  font-size: 18px;
+}
+
+b:current {
+  font-family: "Inter 24px Bold";
+  font-size: 18px;
+}
+
+i:current {
+  font-family: "Inter 24px Italic";
+  font-size: 18px;
+}
+
+.main-text {
+  font-family: "Inter";
+}
+
+.sub-text {
+  color: #eeeeee99;
+  font-family: "Inter";
+}
+
+.theme-dark {
+  background-color: #181818;
+  color: #fffff0
+}
+
+.theme-light {
+  background-color: #FFFFF0;
+  color: #181618;
+}
+.text-success {
+  color: #32de84;
+}
+
+.text-warning {
+  color: #FFB72C;
+}
+
+.text-danger {
+  color: #FF0800;
+}
+
+.text-yellow {
+  color: #ddca00;
+}
+
+.text-violet {
+  color:violet;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.strike {
+  text-decoration: line-through;
+}
+
+.bg-success {
+  display: table;
+  border: 0.85px solid #1db95450;
+  border-radius: 0.89px;
+  background-color: #1DB95420;
+}
+
+.bg-warning {
+  display: table;
+  border: 0.85px solid #FFC72C50;
+  border-radius: 0.89px;
+  background-color: #FFC72C30;
+}
+
+.bg-danger {
+  display: table;
+  border: 0.85px solid #E3263650;
+  border-radius: 0.89px;
+  background-color: #E3263620;
+}
+
+.theme-slick-dark {
+  color: #eeeeee;
+  background-color: #000018;
+}
+.theme-slick-light {
+  color: #080808;
+  background-color: #ededed;
+}
+
+.header {
+  display: flex;
+  border: 0.5px solid;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.left {
+  text-align: left;
+}
+
+.right {
+  text-align: right;
+}
+
+.center {
+  text-align: center;
+}
+
+.bquote {
+  display: table;
+  padding: 1rem;
+  background-color: #FFFDD0;
+  border: 0.89px solid #FFFA90;
+  border-radius: 0.85px;
+}
+
+.bquote-dark {
+  display: table;
+  padding: 1rem;
+  background-color: #38383850;
+  border: 0.89px solid #48484850;
+  border-radius: 0.85px;
+}
+
+.bquote-slick-dark {
+  display: table;
+  padding: 0.5rem;
+  background-color: #000029;
+  border: 0.89px solid #000057;
+  border-radius: 0.95px;
+}
+
+.article-slick-dark {
+  display: table;
+  padding: 0.5rem;
+  background-color: #000939;
+  color: #edededbb;
+  border-radius: 3.00px;
+}
