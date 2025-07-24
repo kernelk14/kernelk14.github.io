@@ -6,6 +6,7 @@ Check out the [new site](./site-new.html) (it's unfinished)
 
 ### Latest Project
 [Youtube Video Information](./repos/jsyt/dets.html)
+[React to Weather](./repos/react-to-weather/index.html)
 
 ### Special Tools
 [OWNSTRAP CSS](./tools/ownstrap.css)
