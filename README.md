@@ -1,18 +1,18 @@
+# The art of nonsense.
+
 ##  Home
 
-### Check out all of my projects [here!!!](https://github.com/kernelk14?tab=repositories)
+Link to [new site](./site-new.html) (it's unfinished)
 
-Check out the [new site](./site-new.html) (it's unfinished)
-
-### Latest Project
+### Latest nonsense
 [Youtube Video Information](./repos/jsyt/dets.html)
 
 [React to Weather](./repos/react-to-weather/index.html)
 
-### Special Tools
+### Special nonsense
 [OWNSTRAP CSS](./tools/ownstrap.css)
 
-### Other Projects
+### Other nonsense
 + [ownstrap](./repos/ownstrap/index.html)
 + [slug](./repos/slug/README.md)
 + [dq](./repos/dq/README.md)
