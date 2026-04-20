@@ -2,6 +2,8 @@
 
 ##  Home
 
+### All of the nonsense things [here](https://github.com/kernelk14?tab=repositories)
+
 Link to [new site](./site-new.html) (it's unfinished)
 
 ### Latest nonsense
