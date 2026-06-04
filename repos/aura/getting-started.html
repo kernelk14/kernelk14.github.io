@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AuraPHP · Getting Started</title>
+<meta name="description" content="AuraPHP framework documentation — Getting Started." />
+<link rel="stylesheet" href="public/css/ownstrap.css" />
+<link rel="stylesheet" href="public/css/ownstrap-colors.css" />
+
+<style>
+  /* ============================================================
+     Theme variables — drive every docs-specific colour from these.
+     OwnStrap already has its own :root palette; ours live alongside.
+     ============================================================ */
+  :root, body.theme-light {
+    /* === Aura Slate — light mode ===
+       Single slate/sky family. All surfaces, text, borders, and accents
+       are pulled from this palette so the page reads as one design. */
+    --docs-bg:            #ffffff;
+    --docs-bg-soft:       #f8fafc;  /* slate-50  — sidebar, navbar */
+    --docs-bg-elevated:   #ffffff;  /* cards, popovers */
+    --docs-bg-hero:       linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #faf5ff 100%);
+    --docs-fg:            #0f172a;  /* slate-900 — primary text */
+    --docs-fg-soft:       #475569;  /* slate-600 — secondary text */
+    --docs-fg-mute:       #94a3b8;  /* slate-400 — tertiary text */
+    --docs-border:        #e2e8f0;  /* slate-200 — primary border */
+    --docs-border-soft:   #f1f5f9;  /* slate-100 — soft border */
+    --docs-border-dashed: #cbd5e1;  /* slate-300 — dashed divider */
+    --docs-code-bg:       #0f172a;  /* slate-900 — code blocks */
+    --docs-code-fg:       #e2e8f0;  /* slate-200 — code text */
+    --docs-table-th-bg:   #f8fafc;  /* slate-50  — table header */
+    --docs-table-row:     #f8fafc;  /* slate-50  — row stripe */
+    --docs-link:          #0284c7;  /* sky-600   — body links */
+    --docs-link-soft-bg:  rgba(2,132,199,.08);
+    --docs-shadow:        0 1px 2px rgba(15,23,42,.04), 0 1px 3px rgba(15,23,42,.06);
+    --docs-nav-h:         56px;
+
+    /* Callout tints (light) — bg = low-alpha brand, bd = solid brand */
+    --callout-info-bg:    rgba(2,132,199,.07);   --callout-info-fg:    #0c4a6e;  --callout-info-bd:    #0284c7;
+    --callout-warn-bg:    rgba(217,119,6,.07);   --callout-warn-fg:    #78350f;  --callout-warn-bd:    #d97706;
+    --callout-success-bg: rgba(5,150,105,.07);   --callout-success-fg: #064e3b;  --callout-success-bd: #059669;
+    --callout-danger-bg:  rgba(220,38,38,.07);   --callout-danger-fg:  #7f1d1d;  --callout-danger-bd:  #dc2626;
+    --callout-purple-bg:  rgba(147,51,234,.07);  --callout-purple-fg:  #581c87;  --callout-purple-bd:  #9333ea;
+  }
+  body.theme-dark {
+    /* === Aura Slate — dark mode ===
+       Same slate family, lifted two steps. Cards = same as sidebar for
+       cohesion, distinguished by border + shadow only. */
+    --docs-bg:            #0f172a;  /* slate-900 — body */
+    --docs-bg-soft:       #1e293b;  /* slate-800 — sidebar, navbar */
+    --docs-bg-elevated:   #1e293b;  /* slate-800 — cards (matches sidebar) */
+    --docs-bg-hero:       linear-gradient(135deg, rgba(2,132,199,.18) 0%, rgba(147,51,234,.12) 50%, rgba(15,23,42,0) 100%);
+    --docs-fg:            #f1f5f9;  /* slate-100 — primary text */
+    --docs-fg-soft:       #cbd5e1;  /* slate-300 — secondary text */
+    --docs-fg-mute:       #94a3b8;  /* slate-400 — tertiary text */
+    --docs-border:        #334155;  /* slate-700 — primary border */
+    --docs-border-soft:   #1e293b;  /* slate-800 — soft border */
+    --docs-border-dashed: #475569;  /* slate-600 — dashed divider */
+    --docs-code-bg:       #020617;  /* slate-950 — code blocks (deeper than body) */
+    --docs-code-fg:       #e2e8f0;  /* slate-200 — code text */
+    --docs-table-th-bg:   #1e293b;  /* slate-800 — table header */
+    --docs-table-row:     #172033;  /* between bg and bg-soft — visible stripe */
+    --docs-link:          #38bdf8;  /* sky-400  — body links */
+    --docs-link-soft-bg:  rgba(56,189,248,.12);
+    --docs-shadow:        0 1px 2px rgba(0,0,0,.3), 0 1px 3px rgba(0,0,0,.4);
+
+    --callout-info-bg:    rgba(56,189,248,.10);  --callout-info-fg:    #bae6fd;  --callout-info-bd:    #38bdf8;
+    --callout-warn-bg:    rgba(251,191,36,.10);  --callout-warn-fg:    #fde68a;  --callout-warn-bd:    #fbbf24;
+    --callout-success-bg: rgba(52,211,153,.10);  --callout-success-fg: #a7f3d0;  --callout-success-bd: #34d399;
+    --callout-danger-bg:  rgba(248,113,113,.10); --callout-danger-fg:  #fecaca;  --callout-danger-bd:  #f87171;
+    --callout-purple-bg:  rgba(192,132,252,.12); --callout-purple-fg:  #e9d5ff;  --callout-purple-bd:  #c084fc;
+  }
+
+  body { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--docs-bg); color: var(--docs-fg); transition: background-color .2s, color .2s; }
+
+  .docs-layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    min-height: calc(100vh - var(--docs-nav-h));
+  }
+  .docs-layout > .sidebar {
+    position: sticky;
+    top: var(--docs-nav-h);
+    max-height: calc(100vh - var(--docs-nav-h));
+    align-self: start;
+  }
+  .docs-main { padding: 2rem 3rem 4rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .docs-main h1 { color: var(--docs-fg); }
+  .docs-main h2 {
+    font-size: 1.875rem; margin: 0 0 .5rem;
+    padding-bottom: .5rem; border-bottom: 1px solid var(--docs-border);
+    color: var(--docs-fg);
+  }
+  .docs-main h3 { font-size: 1.375rem; margin: 1.75rem 0 .5rem; color: var(--docs-fg); }
+  .docs-main h4 { font-size: 1.05rem; margin: 1.25rem 0 .35rem; color: var(--docs-fg); }
+  .docs-main p  { color: var(--docs-fg-soft); }
+  .docs-main li { color: var(--docs-fg-soft); }
+  .docs-main a  { color: var(--docs-link); }
+  .docs-main section { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+  .docs-main section + section { border-top: 1px dashed var(--docs-border-dashed); }
+  .docs-main strong, .docs-main b { color: var(--docs-fg); }
+
+  /* Card adjustments in dark mode (OwnStrap's .card has explicit white bg) */
+  .card { padding: 1rem; background: var(--docs-bg-elevated); border: 1px solid var(--docs-border); border-radius: 8px; color: var(--docs-fg); }
+  .card .card-title { color: var(--docs-fg); margin: 0 0 .35rem; font-size: 1rem; font-weight: 700; }
+  .card .card-text  { color: var(--docs-fg-soft); margin: 0; font-size: .875rem; }
+  .card-body { padding: 1rem; }
+  .card p:last-child, .card .card-text:last-child { margin-bottom: 0; }
+  /* Specificity bump: win over OwnStrap's .theme-dark .card (gray) */
+  body.theme-dark .card { background: var(--docs-bg-elevated); border-color: var(--docs-border); color: var(--docs-fg); }
+
+  /* Grid of feature cards (used in intro) */
+  .grid {
+    display: grid; gap: .85rem; margin: 1rem 0 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .grid .card { transition: border-color .15s, transform .15s; }
+  .grid .card:hover { border-color: var(--docs-link); transform: translateY(-1px); }
+  .grid .card h4 { color: var(--docs-fg); margin: 0 0 .35rem; font-size: 1rem; font-weight: 700; }
+  .grid .card p  { color: var(--docs-fg-soft); margin: 0; font-size: .875rem; }
+  .grid .card a  { color: var(--docs-link); }
+
+  /* Sidebar — uses OwnStrap's .sidebar component.
+     Only layout/positioning adjustments are needed here:
+     stick it below the navbar and cap its height to the viewport. */
+
+  /* Hero on landing */
+  .docs-hero {
+    background: var(--docs-bg-hero), var(--docs-bg-elevated);
+    border: 1px solid var(--docs-border); border-radius: 10px;
+    padding: 2rem 2.25rem; margin-bottom: 1.5rem;
+    color: var(--docs-fg);
+  }
+  .docs-hero h1 { font-size: 2.5rem; margin: 0 0 .35rem; letter-spacing: -.5px; }
+  .docs-hero p  { color: var(--docs-fg-soft); font-size: 1.05rem; margin: 0 0 1rem; }
+
+  /* TOC grid (landing) */
+  .docs-toc {
+    display: grid; gap: .75rem; margin: 1rem 0 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .docs-toc a {
+    display: block; padding: .85rem 1rem;
+    border: 1px solid var(--docs-border); border-radius: 8px;
+    background: var(--docs-bg-elevated); color: var(--docs-fg);
+    text-decoration: none; transition: all .15s;
+  }
+  .docs-toc a:hover { border-color: var(--docs-link); color: var(--docs-link); transform: translateY(-1px); }
+  .docs-toc a strong { display: block; font-size: .95rem; }
+  .docs-toc a span   { color: var(--docs-fg-mute); font-size: .8rem; }
+
+  /* Callouts (used in body content) */
+  .callout {
+    border-left: 3px solid var(--callout-info-bd);
+    background: var(--callout-info-bg);
+    padding: .75rem 1rem; border-radius: 6px;
+    margin: .9rem 0; color: var(--docs-fg-soft);
+  }
+  .callout strong { color: var(--docs-fg); }
+  .callout.warn    { border-color: var(--callout-warn-bd);    background: var(--callout-warn-bg); }
+  .callout.success { border-color: var(--callout-success-bd); background: var(--callout-success-bg); }
+  .callout.danger  { border-color: var(--callout-danger-bd);  background: var(--callout-danger-bg); }
+  .callout.purple  { border-color: var(--callout-purple-bd);  background: var(--callout-purple-bg); }
+
+  /* API doc-list (definition grid) */
+  .api {
+    display: grid; grid-template-columns: 260px 1fr;
+    gap: .35rem .9rem; margin: .75rem 0; font-size: .875rem;
+  }
+  .api .name { color: var(--docs-link); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .82rem; }
+  .api .desc { color: var(--docs-fg-soft); }
+  .api .desc code { background: var(--docs-bg-soft); border: 1px solid var(--docs-border); color: var(--docs-fg); }
+
+  /* Code block (OwnStrap pre/code with our colour palette) */
+  pre { background: var(--docs-code-bg) !important; border-color: #1e293b !important; }
+  pre code { color: var(--docs-code-fg) !important; }
+  pre .c  { color: #64748b; font-style: italic; }
+  pre .k  { color: #c084fc; }
+  pre .s  { color: #86efac; }
+  pre .n  { color: #fdba74; }
+  pre .v  { color: #fde68a; }
+  pre .f  { color: #7dd3fc; }
+  pre .cl { color: #f0abfc; }
+  pre .t  { color: #fca5a5; }
+
+  /* Inline <code> in running text */
+  .docs-main code { background: var(--docs-bg-soft); border: 1px solid var(--docs-border); color: var(--docs-fg); }
+  .docs-main pre code { background: transparent; border: 0; }
+
+  /* Doc table wrapper (used in body content) */
+  .table-wrap { overflow-x: auto; margin: .75rem 0; border: 1px solid var(--docs-border); border-radius: 8px; background: var(--docs-bg-elevated); }
+  .table-wrap table { width: 100%; border-collapse: collapse; font-size: .875rem; color: var(--docs-fg); }
+  .table-wrap th { background: var(--docs-table-th-bg); text-align: left; padding: .65rem .85rem; font-size: .72rem; text-transform: uppercase; letter-spacing: .6px; border-bottom: 1px solid var(--docs-border); color: var(--docs-fg); font-weight: 700; }
+  .table-wrap td { padding: .65rem .85rem; border-bottom: 1px solid var(--docs-border-soft); vertical-align: top; color: var(--docs-fg-soft); }
+  .table-wrap tbody tr:nth-child(even) td { background: var(--docs-table-row); }
+  .table-wrap tr:last-child td { border-bottom: 0; }
+  .table-wrap code { background: var(--docs-bg-soft); border-color: var(--docs-border); color: var(--docs-fg); padding: 1px 5px; }
+
+  /* Tree widget (file structure) */
+  .tree { background: var(--docs-code-bg); color: #cbd5e1; padding: 1rem; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .8rem; line-height: 1.6; overflow-x: auto; border: 1px solid #1e293b; }
+  .tree .d  { color: #7dd3fc; }
+  .tree .f  { color: #fde68a; }
+  .tree .cm { color: #64748b; }
+
+  /* Card adjustments in dark mode (handled by base .card rule above) */
+
+  /* Page footer */
+  .docs-main footer { color: var(--docs-fg-mute) !important; border-top-color: var(--docs-border) !important; }
+  .docs-main footer a { color: var(--docs-fg-mute) !important; }
+  .docs-main footer a:hover { color: var(--docs-link) !important; }
+
+  /* Navbar — blend with the body so the top of the page doesn't pop out,
+     then stick it to the top of the viewport so it stays visible as the
+     user scrolls. OwnStrap's default .navbar is cream (#FFFFF0); we soften
+     it in light mode and match the sidebar in dark mode. */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    height: var(--docs-nav-h);
+    background: var(--docs-bg-soft);
+    border-bottom: 1px solid var(--docs-border);
+    padding: 0 1.25rem;
+  }
+  /* Specificity bump: win over OwnStrap's .theme-dark .navbar border-color */
+  body.theme-dark .navbar { border-bottom-color: var(--docs-border); }
+  .navbar .navbar-brand { color: var(--docs-fg); font-weight: 800; letter-spacing: .3px; }
+  .navbar .nav-link { color: var(--docs-fg-soft); padding: .35rem .6rem; border-radius: 5px; font-size: .9rem; }
+  .navbar .nav-link:hover { color: var(--docs-link); background: var(--docs-link-soft-bg); }
+  .navbar .container-fluid { padding: 0; }
+  .navbar .text-muted { color: var(--docs-fg-mute) !important; }
+
+  /* "On this page" anchor row at the top of multi-section pages */
+  .docs-main > div.d-flex.flex-wrap a { color: var(--docs-fg-mute) !important; }
+  .docs-main > div.d-flex.flex-wrap a:hover { color: var(--docs-link) !important; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .docs-layout { grid-template-columns: 1fr; }
+    .docs-layout > .sidebar { position: relative; top: auto; max-height: none; height: auto; }
+    .docs-main { padding: 1.25rem 1rem 3rem; }
+  }
+
+  /* Print: hide sidebar */
+  @media print {
+    .sidebar, #themeToggle { display: none !important; }
+    .docs-layout { grid-template-columns: 1fr; }
+  }
+</style>
+
+</head>
+<body class="theme-light">
+<nav class="navbar">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    <a href="index.html" class="navbar-brand">AuraPHP <span class="text-muted fw-normal small">· Docs</span></a>
+    <div class="navbar-nav d-flex align-items-center" style="gap:.25rem; flex-direction:row;">
+      <a class="nav-link" href="cli.html">CLI</a>
+      <a class="nav-link" href="management.html">Management</a>
+      <a class="nav-link" href="ownstrap.html">OwnStrap</a>
+      <a class="nav-link" href="https://github.com/kernelk14/aura" rel="noopener">GitHub</a>
+      <button id="themeToggle" class="btn btn-sm btn-outline-primary ms-2" type="button" aria-label="Toggle theme">
+        <span id="themeIcon">☾</span> <span id="themeLabel">Dark</span>
+      </button>
+    </div>
+  </div>
+</nav>
+<div class="docs-layout">
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="sidebar-logo">A</div>
+    <div class="sidebar-brand-name">
+      <strong>Aura<span>PHP</span></strong>
+      <span class="sidebar-brand-version">Framework 1.0 · CLI 1.2 · MIT</span>
+    </div>
+  </a>
+
+  <div class="sidebar-search">
+    <input type="search" id="searchInput" placeholder="Search…" />
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Overview</div>
+      <a href="index.html" class="sidebar-link ">Introduction</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Getting Started</div>
+      <a href="getting-started.html" class="sidebar-link active">Installation &amp; Quick Start</a>
+      <a href="getting-started.html#structure" class="sidebar-link sidebar-link-sub">Directory Structure</a>
+      <a href="getting-started.html#namespaces" class="sidebar-link sidebar-link-sub">Namespaces</a>
+      <a href="getting-started.html#server" class="sidebar-link sidebar-link-sub">Server Config</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Core</div>
+      <a href="architecture.html" class="sidebar-link ">Architecture</a>
+      <a href="routing.html" class="sidebar-link ">Routing &amp; Controllers</a>
+      <a href="http.html" class="sidebar-link ">Request · Response · Events</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Data Layer</div>
+      <a href="database.html" class="sidebar-link ">Database &amp; Query Builder</a>
+      <a href="migrations.html" class="sidebar-link ">Migrations &amp; Seeders</a>
+      <a href="models.html" class="sidebar-link ">Models &amp; Relations</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Presentation</div>
+      <a href="views.html" class="sidebar-link ">Views &amp; Helpers</a>
+      <a href="ownstrap.html" class="sidebar-link ">OwnStrap Frontend</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Security</div>
+      <a href="security.html" class="sidebar-link ">Auth, Validation &amp; Middleware</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tooling</div>
+      <a href="cli.html" class="sidebar-link ">CLI Commands</a>
+      <a href="aura.html" class="sidebar-link ">The <code>aura</code> Tool</a>
+      <a href="management.html" class="sidebar-link ">Management Panel</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="config.html" class="sidebar-link ">Configuration &amp; Env</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">About</div>
+      <a href="credits.html" class="sidebar-link ">AI-Made · Credits</a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="https://github.com/kernelk14/aura" rel="noopener">⭐ GitHub →</a>
+  </div>
+</aside>
+<main class="docs-main">
+<div class="d-flex flex-wrap gap-2 mb-3" style="font-size:.78rem;"><a href="#install" class="text-muted small">Installation</a> · <a href="#quickstart" class="text-muted small">Quick Start — Hello World in 60 seconds</a> · <a href="#structure" class="text-muted small">Directory Structure</a> · <a href="#namespaces" class="text-muted small">Namespaces</a> · <a href="#server" class="text-muted small">Server Configuration</a></div>
+<section id="install"><h2>Installation</h2>
+<p>Create a new project using Composer (the recommended path), or clone the repository directly if you prefer to live on the bleeding edge.</p>
+<h3>Option A — Composer create-project</h3>
+<pre><code>composer create-project kernelk14/aura my-app
+cd my-app
+php aura serve          # → http://127.0.0.1:8080</code></pre>
+<h3>Option B — Manual clone</h3>
+<pre><code>git clone https://github.com/kernelk14/aura.git my-app
+cd my-app
+php aura key:generate   # writes APP_KEY to .env
+php aura serve</code></pre>
+<h3>What <code>key:generate</code> does</h3>
+<ul>
+<li>Generates a 32-byte hex secret (<code>APP_KEY</code>) and writes it to <code>.env</code>.</li>
+<li>Auto-creates <code>.env</code> from <code>.env.example</code> if missing.</li>
+<li>Prints a friendly "next steps" banner.</li>
+</ul>
+<div class="callout"><strong>Tip:</strong> AuraPHP has <em>no</em> runtime Composer dependencies. The framework <code>require_once</code>s its own 22 core files and uses a custom <code>spl_autoload_register</code>. Composer is purely a convenience for PSR-4 autoloading.</div></section>
+<section id="quickstart"><h2>Quick Start — Hello World in 60 seconds</h2>
+<p>AuraPHP follows the "convention over configuration" mantra. Three files and you're done:</p>
+<h3>1. Define a route</h3>
+<p>Open <code>system/config/routes.php</code> and add:</p>
+<pre><code><span class="v">$router</span>-><span class="f">get</span>(<span class="s">'hello'</span>, <span class="s">'hello@index'</span>);</code></pre>
+<h3>2. Create a controller</h3>
+<p>Create <code>site/controllers/hello.php</code>:</p>
+<pre><code><span class="k">namespace</span> <span class="cl">SiteControllers</span>;
+
+<span class="k">use</span> <span class="cl">AuraCore\Controller</span>;
+
+<span class="k">class</span> <span class="cl">Hello</span> <span class="k">extends</span> <span class="cl">Controller</span>
+{
+    <span class="k">public function</span> <span class="f">index</span>()
+    {
+        <span class="v">$this</span>-><span class="f">loadView</span>(<span class="s">'hello'</span>, [<span class="s">'title'</span> =&gt; <span class="s">'Hello World'</span>]);
+    }
+}</code></pre>
+<h3>3. Create a view</h3>
+<p>Create <code>site/views/hello.php</code>:</p>
+<pre><code><span class="t">&lt;div</span> <span class="f">class</span>=<span class="s">"container mt-5 text-center"</span><span class="t">&gt;</span>
+    <span class="t">&lt;h1</span> <span class="f">class</span>=<span class="s">"text-gradient-success"</span><span class="t">&gt;</span><span class="v">&lt;?=</span> htmlspecialchars(<span class="v">$title</span>) <span class="v">?&gt;</span><span class="t">&lt;/h1&gt;</span>
+    <span class="t">&lt;p</span> <span class="f">class</span>=<span class="s">"text-muted"</span><span class="t">&gt;</span>Built with AuraPHP <span class="v">&amp;hearts;</span><span class="t">&lt;/p&gt;</span>
+<span class="t">&lt;/div&gt;</span></code></pre>
+<p>That's it. Hit <code>http://127.0.0.1:8080/hello</code> and you'll see your page rendered inside the standard layout (with OwnStrap CSS, navbar, and theme toggle).</p></section>
+<section id="structure"><h2>Directory Structure</h2>
+<div class="tree"><span class="d">auraphp/</span>
+├── <span class="f">aura</span>                        <span class="cm"># CLI executable (single-file PHP)</span>
+├── <span class="f">index.php</span>                  <span class="cm"># Front controller / entry point</span>
+├── <span class="f">composer.json</span>             <span class="cm"># PSR-4 autoload + bin + scripts</span>
+├── <span class="f">package.json</span>              <span class="cm"># Frontend tooling metadata</span>
+├── <span class="f">.htaccess</span>                 <span class="cm"># Apache rewrite → index.php</span>
+├── <span class="d">public/</span>                    <span class="cm"># Web-accessible assets (CSS/JS/fonts)</span>
+│   ├── <span class="d">css/</span>
+│   │   ├── <span class="f">ownstrap.css</span>          <span class="cm"># Main CSS framework (2,999 lines)</span>
+│   │   ├── <span class="f">ownstrap-colors.css</span>   <span class="cm"># Color palette (674 lines)</span>
+│   │   └── <span class="d">fonts/</span>                <span class="cm"># Fira Sans + Inter</span>
+│   └── <span class="d">js/</span>
+│       └── <span class="f">ownstrap.js</span>           <span class="cm"># OwnStrap JS class (1,152 lines)</span>
+├── <span class="d">system/</span>                    <span class="cm"># Framework core (don't edit)</span>
+│   ├── <span class="d">core/</span>                    <span class="cm"># 22 AuraCore\ classes</span>
+│   ├── <span class="d">config/</span>
+│   │   ├── <span class="f">config.php</span>           <span class="cm"># App config (base_url, etc.)</span>
+│   │   ├── <span class="f">database.php</span>         <span class="cm"># Multi-connection DB config</span>
+│   │   └── <span class="f">routes.php</span>           <span class="cm"># Route definitions</span>
+│   ├── <span class="d">helpers/</span>
+│   │   └── <span class="f">url_helper.php</span>       <span class="cm"># Global functions</span>
+│   └── <span class="d">installer-needs/</span>
+│       └── <span class="f">PostInstall.php</span>      <span class="cm"># Composer post-install hook</span>
+├── <span class="d">site/</span>                      <span class="cm"># Your application (M, V, C)</span>
+│   ├── <span class="d">controllers/</span>            <span class="cm"># SiteControllers\*</span>
+│   ├── <span class="d">models/</span>                 <span class="cm"># SiteModels\*</span>
+│   ├── <span class="d">views/</span>                  <span class="cm"># Plain PHP templates</span>
+│   ├── <span class="d">templates/</span>              <span class="cm"># Reusable partials</span>
+│   ├── <span class="d">events/</span>                 <span class="cm"># SiteEvents\*</span>
+│   ├── <span class="d">listeners/</span>              <span class="cm"># SiteListeners\*</span>
+│   ├── <span class="d">middleware/</span>             <span class="cm"># SiteMiddleware\*</span>
+│   ├── <span class="d">requests/</span>               <span class="cm"># SiteRequests\*</span>
+│   ├── <span class="d">rules/</span>                  <span class="cm"># SiteRules\*</span>
+│   ├── <span class="d">scopes/</span>                 <span class="cm"># SiteScopes\*</span>
+│   ├── <span class="d">seeders/</span>                <span class="cm"># Seeder classes</span>
+│   ├── <span class="d">migrations/</span>             <span class="cm"># Migration classes</span>
+│   ├── <span class="d">commands/</span>               <span class="cm"># Custom CLI commands</span>
+│   ├── <span class="d">providers/</span>              <span class="cm"># Service providers</span>
+│   └── <span class="d">pages/management/</span>        <span class="cm"># Built-in admin UI (8 pages)</span>
+└── <span class="d">storage/</span>
+    └── <span class="d">logs/</span>                   <span class="cm"># Logger writes YYYY-MM-DD.log files</span></div></section>
+<section id="namespaces"><h2>Namespaces</h2>
+<div class="table-wrap"><table><thead><tr><th>Namespace</th><th>Path</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>AuraCore\</code></td><td><code>system/core/</code></td><td>All 22 framework classes</td></tr>
+<tr><td><code>SiteControllers\</code></td><td><code>site/controllers/</code></td><td>Application controllers</td></tr>
+<tr><td><code>SiteModels\</code></td><td><code>site/models/</code></td><td>Application models</td></tr>
+<tr><td><code>SiteMiddleware\</code></td><td><code>site/middleware/</code></td><td>Application middleware</td></tr>
+<tr><td><code>SiteEvents\</code></td><td><code>site/events/</code></td><td>Application event classes</td></tr>
+<tr><td><code>SiteListeners\</code></td><td><code>site/listeners/</code></td><td>Application event listeners</td></tr>
+<tr><td><code>SiteRequests\</code></td><td><code>site/requests/</code></td><td>Form-request validators</td></tr>
+<tr><td><code>SiteRules\</code></td><td><code>site/rules/</code></td><td>Custom validation rules</td></tr>
+<tr><td><code>SiteScopes\</code></td><td><code>site/scopes/</code></td><td>Model global scopes</td></tr>
+<tr><td><code>SiteCommands\</code></td><td><code>site/commands/</code></td><td>Custom CLI commands</td></tr>
+<tr><td><code>SiteProviders\</code></td><td><code>site/providers/</code></td><td>Service providers</td></tr>
+<tr><td><code>Installer\</code></td><td><code>system/installer-needs/</code></td><td>Composer post-install hook</td></tr>
+</tbody></table></div></section>
+<section id="server"><h2>Server Configuration</h2>
+<h3>Apache (shipped <code>.htaccess</code>)</h3>
+<pre><code><span class="cm">RewriteEngine On</span>
+<span class="cm">RewriteCond %{REQUEST_FILENAME} !-f</span>
+<span class="cm">RewriteCond %{REQUEST_FILENAME} !-d</span>
+<span class="cm">RewriteRule ^(.*)$ index.php/$1 [L]</span></code></pre>
+<h3>Nginx</h3>
+<pre><code><span class="k">server</span> {
+    <span class="k">listen</span> <span class="n">80</span>;
+    <span class="k">server_name</span> my-app.local;
+    <span class="k">root</span> /var/www/my-app;
+    <span class="k">index</span> index.php;
+
+    <span class="k">location</span> / {
+        <span class="k">try_files</span> <span class="v">$uri</span> <span class="v">$uri</span>/ /index.php?<span class="v">$args</span>;
+    }
+
+    <span class="k">location</span> ~ \.php$ {
+        <span class="k">fastcgi_pass</span> unix:/var/run/php/php8.1-fpm.sock;
+        <span class="k">fastcgi_param</span> SCRIPT_FILENAME <span class="v">$document_root$fastcgi_script_name</span>;
+        <span class="k">include</span> fastcgi_params;
+    }
+}</code></pre>
+<h3>PHP built-in server (development)</h3>
+<pre><code>php aura serve                              <span class="cm"># default 127.0.0.1:8080</span>
+php aura serve --host=0.0.0.0 --port=3000   <span class="cm"># custom host/port</span></code></pre>
+<h3>Requirements</h3>
+<ul>
+<li>PHP &ge; 7.4 (with <code>PDO</code> + your DB driver: <code>pdo_mysql</code>, <code>pdo_pgsql</code>, <code>pdo_sqlite</code>, <code>pdo_sqlsrv</code>)</li>
+<li>Apache with <code>mod_rewrite</code>, <em>or</em> Nginx + PHP-FPM, <em>or</em> PHP built-in server</li>
+<li>Composer is optional (only used for autoloading convenience)</li>
+</ul></section>
+<footer class="mt-5 pt-3" style="border-top:1px solid #e0e0e0; color:#888; font-size:.8rem;">
+  <div class="d-flex justify-content-between flex-wrap gap-2">
+    <div>AuraPHP · MIT License · Framework 1.0.0 · CLI 1.2.0 · <a href="credits.html">AI-Made with OpenCode</a></div>
+    <div><a href="https://github.com/kernelk14/aura" rel="noopener" class="text-muted">⭐ GitHub</a></div>
+  </div>
+</footer>
+</main>
+</div>
+
+<script src="public/js/ownstrap.js"></script>
+<script>
+document.querySelectorAll('pre').forEach(function (pre) {
+  var btn = document.createElement('button');
+  btn.className = 'btn btn-sm copy-btn';
+  btn.textContent = 'Copy';
+  btn.style.cssText = 'position:absolute;top:8px;right:8px;';
+  btn.addEventListener('click', function () {
+    var code = pre.querySelector('code');
+    var txt  = code ? code.innerText : pre.innerText;
+    navigator.clipboard.writeText(txt).then(function () {
+      btn.textContent = 'Copied!';
+      setTimeout(function () { btn.textContent = 'Copy'; }, 1200);
+    });
+  });
+  pre.appendChild(btn);
+});
+
+// Lightweight in-page filter
+var input = document.getElementById('searchInput');
+if (input) {
+  input.addEventListener('input', function () {
+    var q = this.value.toLowerCase().trim();
+    var sections = document.querySelectorAll('.docs-main section');
+    if (!q) { sections.forEach(function (s) { s.style.display = ''; }); return; }
+    sections.forEach(function (s) {
+      s.style.display = s.textContent.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+    });
+  });
+}
+
+// Theme toggle (re-uses OwnStrap themes)
+var themeBtn   = document.getElementById('themeToggle');
+var themeIcon  = document.getElementById('themeIcon');
+var themeLabel = document.getElementById('themeLabel');
+function applyTheme(mode) {
+  var dark = (mode === 'dark');
+  document.body.classList.toggle('theme-dark',  dark);
+  document.body.classList.toggle('theme-light', !dark);
+  if (themeIcon)  themeIcon.textContent  = dark ? '☀' : '☾';
+  if (themeLabel) themeLabel.textContent = dark ? 'Light' : 'Dark';
+  if (themeBtn)   themeBtn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+if (themeBtn) {
+  applyTheme(localStorage.getItem('docs-theme') || 'light');
+  themeBtn.addEventListener('click', function () {
+    var next = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('docs-theme', next);
+  });
+}
+</script>
+
+</body>
+</html>

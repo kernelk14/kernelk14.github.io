@@ -7,6 +7,8 @@
 Link to [new site](./site-new.html) (it's unfinished)
 
 ### Latest nonsense
+[The Aura PHP Framework](./repos/aura/index.html)
+
 [Youtube Video Information](./repos/jsyt/dets.html)
 
 [React to Weather](./repos/react-to-weather/index.html)

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AuraPHP · The aura Tool</title>
+<meta name="description" content="AuraPHP framework documentation — The aura Tool." />
+<link rel="stylesheet" href="public/css/ownstrap.css" />
+<link rel="stylesheet" href="public/css/ownstrap-colors.css" />
+
+<style>
+  /* ============================================================
+     Theme variables — drive every docs-specific colour from these.
+     OwnStrap already has its own :root palette; ours live alongside.
+     ============================================================ */
+  :root, body.theme-light {
+    /* === Aura Slate — light mode ===
+       Single slate/sky family. All surfaces, text, borders, and accents
+       are pulled from this palette so the page reads as one design. */
+    --docs-bg:            #ffffff;
+    --docs-bg-soft:       #f8fafc;  /* slate-50  — sidebar, navbar */
+    --docs-bg-elevated:   #ffffff;  /* cards, popovers */
+    --docs-bg-hero:       linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #faf5ff 100%);
+    --docs-fg:            #0f172a;  /* slate-900 — primary text */
+    --docs-fg-soft:       #475569;  /* slate-600 — secondary text */
+    --docs-fg-mute:       #94a3b8;  /* slate-400 — tertiary text */
+    --docs-border:        #e2e8f0;  /* slate-200 — primary border */
+    --docs-border-soft:   #f1f5f9;  /* slate-100 — soft border */
+    --docs-border-dashed: #cbd5e1;  /* slate-300 — dashed divider */
+    --docs-code-bg:       #0f172a;  /* slate-900 — code blocks */
+    --docs-code-fg:       #e2e8f0;  /* slate-200 — code text */
+    --docs-table-th-bg:   #f8fafc;  /* slate-50  — table header */
+    --docs-table-row:     #f8fafc;  /* slate-50  — row stripe */
+    --docs-link:          #0284c7;  /* sky-600   — body links */
+    --docs-link-soft-bg:  rgba(2,132,199,.08);
+    --docs-shadow:        0 1px 2px rgba(15,23,42,.04), 0 1px 3px rgba(15,23,42,.06);
+    --docs-nav-h:         56px;
+
+    /* Callout tints (light) — bg = low-alpha brand, bd = solid brand */
+    --callout-info-bg:    rgba(2,132,199,.07);   --callout-info-fg:    #0c4a6e;  --callout-info-bd:    #0284c7;
+    --callout-warn-bg:    rgba(217,119,6,.07);   --callout-warn-fg:    #78350f;  --callout-warn-bd:    #d97706;
+    --callout-success-bg: rgba(5,150,105,.07);   --callout-success-fg: #064e3b;  --callout-success-bd: #059669;
+    --callout-danger-bg:  rgba(220,38,38,.07);   --callout-danger-fg:  #7f1d1d;  --callout-danger-bd:  #dc2626;
+    --callout-purple-bg:  rgba(147,51,234,.07);  --callout-purple-fg:  #581c87;  --callout-purple-bd:  #9333ea;
+  }
+  body.theme-dark {
+    /* === Aura Slate — dark mode ===
+       Same slate family, lifted two steps. Cards = same as sidebar for
+       cohesion, distinguished by border + shadow only. */
+    --docs-bg:            #0f172a;  /* slate-900 — body */
+    --docs-bg-soft:       #1e293b;  /* slate-800 — sidebar, navbar */
+    --docs-bg-elevated:   #1e293b;  /* slate-800 — cards (matches sidebar) */
+    --docs-bg-hero:       linear-gradient(135deg, rgba(2,132,199,.18) 0%, rgba(147,51,234,.12) 50%, rgba(15,23,42,0) 100%);
+    --docs-fg:            #f1f5f9;  /* slate-100 — primary text */
+    --docs-fg-soft:       #cbd5e1;  /* slate-300 — secondary text */
+    --docs-fg-mute:       #94a3b8;  /* slate-400 — tertiary text */
+    --docs-border:        #334155;  /* slate-700 — primary border */
+    --docs-border-soft:   #1e293b;  /* slate-800 — soft border */
+    --docs-border-dashed: #475569;  /* slate-600 — dashed divider */
+    --docs-code-bg:       #020617;  /* slate-950 — code blocks (deeper than body) */
+    --docs-code-fg:       #e2e8f0;  /* slate-200 — code text */
+    --docs-table-th-bg:   #1e293b;  /* slate-800 — table header */
+    --docs-table-row:     #172033;  /* between bg and bg-soft — visible stripe */
+    --docs-link:          #38bdf8;  /* sky-400  — body links */
+    --docs-link-soft-bg:  rgba(56,189,248,.12);
+    --docs-shadow:        0 1px 2px rgba(0,0,0,.3), 0 1px 3px rgba(0,0,0,.4);
+
+    --callout-info-bg:    rgba(56,189,248,.10);  --callout-info-fg:    #bae6fd;  --callout-info-bd:    #38bdf8;
+    --callout-warn-bg:    rgba(251,191,36,.10);  --callout-warn-fg:    #fde68a;  --callout-warn-bd:    #fbbf24;
+    --callout-success-bg: rgba(52,211,153,.10);  --callout-success-fg: #a7f3d0;  --callout-success-bd: #34d399;
+    --callout-danger-bg:  rgba(248,113,113,.10); --callout-danger-fg:  #fecaca;  --callout-danger-bd:  #f87171;
+    --callout-purple-bg:  rgba(192,132,252,.12); --callout-purple-fg:  #e9d5ff;  --callout-purple-bd:  #c084fc;
+  }
+
+  body { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--docs-bg); color: var(--docs-fg); transition: background-color .2s, color .2s; }
+
+  .docs-layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    min-height: calc(100vh - var(--docs-nav-h));
+  }
+  .docs-layout > .sidebar {
+    position: sticky;
+    top: var(--docs-nav-h);
+    max-height: calc(100vh - var(--docs-nav-h));
+    align-self: start;
+  }
+  .docs-main { padding: 2rem 3rem 4rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .docs-main h1 { color: var(--docs-fg); }
+  .docs-main h2 {
+    font-size: 1.875rem; margin: 0 0 .5rem;
+    padding-bottom: .5rem; border-bottom: 1px solid var(--docs-border);
+    color: var(--docs-fg);
+  }
+  .docs-main h3 { font-size: 1.375rem; margin: 1.75rem 0 .5rem; color: var(--docs-fg); }
+  .docs-main h4 { font-size: 1.05rem; margin: 1.25rem 0 .35rem; color: var(--docs-fg); }
+  .docs-main p  { color: var(--docs-fg-soft); }
+  .docs-main li { color: var(--docs-fg-soft); }
+  .docs-main a  { color: var(--docs-link); }
+  .docs-main section { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+  .docs-main section + section { border-top: 1px dashed var(--docs-border-dashed); }
+  .docs-main strong, .docs-main b { color: var(--docs-fg); }
+
+  /* Card adjustments in dark mode (OwnStrap's .card has explicit white bg) */
+  .card { padding: 1rem; background: var(--docs-bg-elevated); border: 1px solid var(--docs-border); border-radius: 8px; color: var(--docs-fg); }
+  .card .card-title { color: var(--docs-fg); margin: 0 0 .35rem; font-size: 1rem; font-weight: 700; }
+  .card .card-text  { color: var(--docs-fg-soft); margin: 0; font-size: .875rem; }
+  .card-body { padding: 1rem; }
+  .card p:last-child, .card .card-text:last-child { margin-bottom: 0; }
+  /* Specificity bump: win over OwnStrap's .theme-dark .card (gray) */
+  body.theme-dark .card { background: var(--docs-bg-elevated); border-color: var(--docs-border); color: var(--docs-fg); }
+
+  /* Grid of feature cards (used in intro) */
+  .grid {
+    display: grid; gap: .85rem; margin: 1rem 0 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .grid .card { transition: border-color .15s, transform .15s; }
+  .grid .card:hover { border-color: var(--docs-link); transform: translateY(-1px); }
+  .grid .card h4 { color: var(--docs-fg); margin: 0 0 .35rem; font-size: 1rem; font-weight: 700; }
+  .grid .card p  { color: var(--docs-fg-soft); margin: 0; font-size: .875rem; }
+  .grid .card a  { color: var(--docs-link); }
+
+  /* Sidebar — uses OwnStrap's .sidebar component.
+     Only layout/positioning adjustments are needed here:
+     stick it below the navbar and cap its height to the viewport. */
+
+  /* Hero on landing */
+  .docs-hero {
+    background: var(--docs-bg-hero), var(--docs-bg-elevated);
+    border: 1px solid var(--docs-border); border-radius: 10px;
+    padding: 2rem 2.25rem; margin-bottom: 1.5rem;
+    color: var(--docs-fg);
+  }
+  .docs-hero h1 { font-size: 2.5rem; margin: 0 0 .35rem; letter-spacing: -.5px; }
+  .docs-hero p  { color: var(--docs-fg-soft); font-size: 1.05rem; margin: 0 0 1rem; }
+
+  /* TOC grid (landing) */
+  .docs-toc {
+    display: grid; gap: .75rem; margin: 1rem 0 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .docs-toc a {
+    display: block; padding: .85rem 1rem;
+    border: 1px solid var(--docs-border); border-radius: 8px;
+    background: var(--docs-bg-elevated); color: var(--docs-fg);
+    text-decoration: none; transition: all .15s;
+  }
+  .docs-toc a:hover { border-color: var(--docs-link); color: var(--docs-link); transform: translateY(-1px); }
+  .docs-toc a strong { display: block; font-size: .95rem; }
+  .docs-toc a span   { color: var(--docs-fg-mute); font-size: .8rem; }
+
+  /* Callouts (used in body content) */
+  .callout {
+    border-left: 3px solid var(--callout-info-bd);
+    background: var(--callout-info-bg);
+    padding: .75rem 1rem; border-radius: 6px;
+    margin: .9rem 0; color: var(--docs-fg-soft);
+  }
+  .callout strong { color: var(--docs-fg); }
+  .callout.warn    { border-color: var(--callout-warn-bd);    background: var(--callout-warn-bg); }
+  .callout.success { border-color: var(--callout-success-bd); background: var(--callout-success-bg); }
+  .callout.danger  { border-color: var(--callout-danger-bd);  background: var(--callout-danger-bg); }
+  .callout.purple  { border-color: var(--callout-purple-bd);  background: var(--callout-purple-bg); }
+
+  /* API doc-list (definition grid) */
+  .api {
+    display: grid; grid-template-columns: 260px 1fr;
+    gap: .35rem .9rem; margin: .75rem 0; font-size: .875rem;
+  }
+  .api .name { color: var(--docs-link); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .82rem; }
+  .api .desc { color: var(--docs-fg-soft); }
+  .api .desc code { background: var(--docs-bg-soft); border: 1px solid var(--docs-border); color: var(--docs-fg); }
+
+  /* Code block (OwnStrap pre/code with our colour palette) */
+  pre { background: var(--docs-code-bg) !important; border-color: #1e293b !important; }
+  pre code { color: var(--docs-code-fg) !important; }
+  pre .c  { color: #64748b; font-style: italic; }
+  pre .k  { color: #c084fc; }
+  pre .s  { color: #86efac; }
+  pre .n  { color: #fdba74; }
+  pre .v  { color: #fde68a; }
+  pre .f  { color: #7dd3fc; }
+  pre .cl { color: #f0abfc; }
+  pre .t  { color: #fca5a5; }
+
+  /* Inline <code> in running text */
+  .docs-main code { background: var(--docs-bg-soft); border: 1px solid var(--docs-border); color: var(--docs-fg); }
+  .docs-main pre code { background: transparent; border: 0; }
+
+  /* Doc table wrapper (used in body content) */
+  .table-wrap { overflow-x: auto; margin: .75rem 0; border: 1px solid var(--docs-border); border-radius: 8px; background: var(--docs-bg-elevated); }
+  .table-wrap table { width: 100%; border-collapse: collapse; font-size: .875rem; color: var(--docs-fg); }
+  .table-wrap th { background: var(--docs-table-th-bg); text-align: left; padding: .65rem .85rem; font-size: .72rem; text-transform: uppercase; letter-spacing: .6px; border-bottom: 1px solid var(--docs-border); color: var(--docs-fg); font-weight: 700; }
+  .table-wrap td { padding: .65rem .85rem; border-bottom: 1px solid var(--docs-border-soft); vertical-align: top; color: var(--docs-fg-soft); }
+  .table-wrap tbody tr:nth-child(even) td { background: var(--docs-table-row); }
+  .table-wrap tr:last-child td { border-bottom: 0; }
+  .table-wrap code { background: var(--docs-bg-soft); border-color: var(--docs-border); color: var(--docs-fg); padding: 1px 5px; }
+
+  /* Tree widget (file structure) */
+  .tree { background: var(--docs-code-bg); color: #cbd5e1; padding: 1rem; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .8rem; line-height: 1.6; overflow-x: auto; border: 1px solid #1e293b; }
+  .tree .d  { color: #7dd3fc; }
+  .tree .f  { color: #fde68a; }
+  .tree .cm { color: #64748b; }
+
+  /* Card adjustments in dark mode (handled by base .card rule above) */
+
+  /* Page footer */
+  .docs-main footer { color: var(--docs-fg-mute) !important; border-top-color: var(--docs-border) !important; }
+  .docs-main footer a { color: var(--docs-fg-mute) !important; }
+  .docs-main footer a:hover { color: var(--docs-link) !important; }
+
+  /* Navbar — blend with the body so the top of the page doesn't pop out,
+     then stick it to the top of the viewport so it stays visible as the
+     user scrolls. OwnStrap's default .navbar is cream (#FFFFF0); we soften
+     it in light mode and match the sidebar in dark mode. */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    height: var(--docs-nav-h);
+    background: var(--docs-bg-soft);
+    border-bottom: 1px solid var(--docs-border);
+    padding: 0 1.25rem;
+  }
+  /* Specificity bump: win over OwnStrap's .theme-dark .navbar border-color */
+  body.theme-dark .navbar { border-bottom-color: var(--docs-border); }
+  .navbar .navbar-brand { color: var(--docs-fg); font-weight: 800; letter-spacing: .3px; }
+  .navbar .nav-link { color: var(--docs-fg-soft); padding: .35rem .6rem; border-radius: 5px; font-size: .9rem; }
+  .navbar .nav-link:hover { color: var(--docs-link); background: var(--docs-link-soft-bg); }
+  .navbar .container-fluid { padding: 0; }
+  .navbar .text-muted { color: var(--docs-fg-mute) !important; }
+
+  /* "On this page" anchor row at the top of multi-section pages */
+  .docs-main > div.d-flex.flex-wrap a { color: var(--docs-fg-mute) !important; }
+  .docs-main > div.d-flex.flex-wrap a:hover { color: var(--docs-link) !important; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .docs-layout { grid-template-columns: 1fr; }
+    .docs-layout > .sidebar { position: relative; top: auto; max-height: none; height: auto; }
+    .docs-main { padding: 1.25rem 1rem 3rem; }
+  }
+
+  /* Print: hide sidebar */
+  @media print {
+    .sidebar, #themeToggle { display: none !important; }
+    .docs-layout { grid-template-columns: 1fr; }
+  }
+</style>
+
+</head>
+<body class="theme-light">
+<nav class="navbar">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    <a href="index.html" class="navbar-brand">AuraPHP <span class="text-muted fw-normal small">· Docs</span></a>
+    <div class="navbar-nav d-flex align-items-center" style="gap:.25rem; flex-direction:row;">
+      <a class="nav-link" href="cli.html">CLI</a>
+      <a class="nav-link" href="management.html">Management</a>
+      <a class="nav-link" href="ownstrap.html">OwnStrap</a>
+      <a class="nav-link" href="https://github.com/kernelk14/aura" rel="noopener">GitHub</a>
+      <button id="themeToggle" class="btn btn-sm btn-outline-primary ms-2" type="button" aria-label="Toggle theme">
+        <span id="themeIcon">☾</span> <span id="themeLabel">Dark</span>
+      </button>
+    </div>
+  </div>
+</nav>
+<div class="docs-layout">
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="sidebar-logo">A</div>
+    <div class="sidebar-brand-name">
+      <strong>Aura<span>PHP</span></strong>
+      <span class="sidebar-brand-version">Framework 1.0 · CLI 1.2 · MIT</span>
+    </div>
+  </a>
+
+  <div class="sidebar-search">
+    <input type="search" id="searchInput" placeholder="Search…" />
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Overview</div>
+      <a href="index.html" class="sidebar-link ">Introduction</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Getting Started</div>
+      <a href="getting-started.html" class="sidebar-link ">Installation &amp; Quick Start</a>
+      <a href="getting-started.html#structure" class="sidebar-link sidebar-link-sub">Directory Structure</a>
+      <a href="getting-started.html#namespaces" class="sidebar-link sidebar-link-sub">Namespaces</a>
+      <a href="getting-started.html#server" class="sidebar-link sidebar-link-sub">Server Config</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Core</div>
+      <a href="architecture.html" class="sidebar-link ">Architecture</a>
+      <a href="routing.html" class="sidebar-link ">Routing &amp; Controllers</a>
+      <a href="http.html" class="sidebar-link ">Request · Response · Events</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Data Layer</div>
+      <a href="database.html" class="sidebar-link ">Database &amp; Query Builder</a>
+      <a href="migrations.html" class="sidebar-link ">Migrations &amp; Seeders</a>
+      <a href="models.html" class="sidebar-link ">Models &amp; Relations</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Presentation</div>
+      <a href="views.html" class="sidebar-link ">Views &amp; Helpers</a>
+      <a href="ownstrap.html" class="sidebar-link ">OwnStrap Frontend</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Security</div>
+      <a href="security.html" class="sidebar-link ">Auth, Validation &amp; Middleware</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tooling</div>
+      <a href="cli.html" class="sidebar-link ">CLI Commands</a>
+      <a href="aura.html" class="sidebar-link active">The <code>aura</code> Tool</a>
+      <a href="management.html" class="sidebar-link ">Management Panel</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="config.html" class="sidebar-link ">Configuration &amp; Env</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">About</div>
+      <a href="credits.html" class="sidebar-link ">AI-Made · Credits</a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="https://github.com/kernelk14/aura" rel="noopener">⭐ GitHub →</a>
+  </div>
+</aside>
+<main class="docs-main">
+
+
+<section id="overview">
+  <h2>The <code>aura</code> Tool</h2>
+  <p>The <code>aura</code> file at the project root is a <strong>single-file PHP CLI</strong> (1,842 lines, ~49 KB) that drives every development workflow — generation, migrations, seeding, the dev server, key generation, and project introspection. It is standalone, requires no Composer autoloader for most commands, and uses ANSI-coloured output via custom <code>write()</code> / <code>writeln()</code> helpers.</p>
+
+  <div class="callout">
+    <strong>Shebang:</strong> <code>#!/usr/bin/env php</code> · <strong>Version:</strong> <code>1.2.0</code> (a global <code>$version</code> variable, separate from the framework's <code>1.0.0</code>).
+  </div>
+
+  <h3>Why it's a single file</h3>
+  <p>Every generator, command, and helper lives in one place so the tool:</p>
+  <ul>
+    <li>Has zero install step — just <code>chmod +x aura</code> (already done) and run.</li>
+    <li>Doesn't depend on Composer's autoloader being present (it does its own <code>require_once</code> of <code>system/core/{base,database,query-builder,schema}.php</code> when it needs them).</li>
+    <li>Reads project config from the filesystem using three constants: <code>AURA_ROOT</code>, <code>AURA_SYSTEM</code>, <code>AURA_SITE</code>.</li>
+  </ul>
+</section>
+
+<section id="constants">
+  <h2>Constants &amp; Globals</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Name</th><th>Type</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>AURA_ROOT</code></td><td>const</td><td>Project root (directory of the <code>aura</code> file itself).</td></tr>
+      <tr><td><code>AURA_SYSTEM</code></td><td>const</td><td><code>AURA_ROOT . '/system'</code> — framework code.</td></tr>
+      <tr><td><code>AURA_SITE</code></td><td>const</td><td><code>AURA_ROOT . '/site'</code> — your application code.</td></tr>
+      <tr><td><code>$version</code></td><td>global</td><td>CLI version string (<code>'1.2.0'</code>), used in <code>list</code>, <code>help</code>, <code>about</code>, and the <code>--version</code> switch.</td></tr>
+      <tr><td><code>$commands</code></td><td>global array</td><td>Registry of every command. Key = name, value = <code>[description, usage, category]</code>.</td></tr>
+      <tr><td><code>$categories</code></td><td>global array</td><td>Display label per category: <code>server</code>, <code>make</code>, <code>db</code>, <code>util</code>.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="argv">
+  <h2>Argument Parsing</h2>
+  <p>Lines 160–173 implement a tiny but effective parser:</p>
+<pre><code><span class="v">$args</span>        = <span class="f">array_slice</span>(<span class="v">$argv</span>, <span class="n">1</span>);   <span class="cm">// strip script name</span>
+<span class="v">$command</span>     = <span class="v">$args</span>[<span class="n">0</span>] ?? <span class="s">'list'</span>;
+<span class="v">$commandArgs</span> = <span class="f">array_slice</span>(<span class="v">$args</span>, <span class="n">1</span>);
+
+<span class="v">$options</span> = [];   <span class="cm">// assoc: --key=value OR --flag=true</span>
+<span class="v">$params</span>  = [];   <span class="cm">// positional</span>
+<span class="k">foreach</span> (<span class="v">$commandArgs</span> <span class="k">as</span> <span class="v">$arg</span>) {
+    <span class="k">if</span> (<span class="f">strpos</span>(<span class="v">$arg</span>, <span class="s">'--'</span>) === <span class="n">0</span>) {
+        <span class="v">$parts</span> = <span class="f">explode</span>(<span class="s">'='</span>, <span class="f">substr</span>(<span class="v">$arg</span>, <span class="n">2</span>), <span class="n">2</span>);
+        <span class="v">$options</span>[<span class="v">$parts</span>[<span class="n">0</span>]] = <span class="v">$parts</span>[<span class="n">1</span>] ?? <span class="k">true</span>;
+    } <span class="k">else</span> {
+        <span class="v">$params</span>[] = <span class="v">$arg</span>;
+    }
+}</code></pre>
+
+  <p>That's it — no external library, no <code>getopt</code>, no Symfony Console. Every command receives <code>$params</code> (array of positional) and <code>$options</code> (assoc array of flags).</p>
+  <p>Notable: there is <strong>no <code>$command_aliases</code></strong>. Aliases are hard-coded in the dispatch <code>switch</code> (e.g. <code>'help' / '--help' / '-h'</code> all go to the same case).</p>
+</section>
+
+<section id="helpers">
+  <h2>Helper Functions</h2>
+  <h3>I/O</h3>
+  <div class="api">
+    <span class="name">write($text, $color = null)</span>           <span class="desc">Echoes <code>$text</code> wrapped in an ANSI color code. Allowed colors: <code>green, red, yellow, blue, cyan, magenta, gray, reset, bold</code>. Always emits <code>\033[0m</code> after the text.</span>
+    <span class="name">writeln($text = '', $color = null)</span>    <span class="desc"><code>write($text . "\n", $color)</code></span>
+    <span class="name">success($text) / error($text) / info($text) / warn($text)</span> <span class="desc">Shorthand for green / red / cyan / yellow <code>writeln()</code> calls.</span>
+    <span class="name">done()</span>                               <span class="desc">Prints the literal <code>'  DONE'</code> in green — used per-migration and per-seeder progress indicator.</span>
+    <span class="name">confirm($question)</span>                    <span class="desc">Prints <code>$question</code>, reads a line from STDIN, returns <code>true</code> if the trimmed answer is <code>yes</code> or <code>y</code> (case-insensitive). Used by <code>migrate:fresh</code>, <code>migrate:reset</code>, <code>db:wipe</code>.</span>
+  </div>
+
+  <h3>Naming conversions</h3>
+  <div class="api">
+    <span class="name">studlyCase($name)</span>     <span class="desc">Replaces <code>-</code> and <code>_</code> with spaces, <code>ucwords()</code>, strips spaces. <code>'add_email_to_users'</code> → <code>'AddEmailToUsers'</code>. <code>'add-email-to-users'</code> also works.</span>
+    <span class="name">camelCase($name)</span>      <span class="desc"><code>lcfirst(studlyCase($name))</code>. <em>Defined but not used anywhere in the current source.</em></span>
+    <span class="name">kebabCase($name)</span>       <span class="desc">Inserts <code>-</code> between lowercase→uppercase boundary, lowercases, replaces <code>_</code> with <code>-</code>. <code>'UserPost'</code> → <code>'user-post'</code>. <code>'user_post'</code> → <code>'user-post'</code>.</span>
+    <span class="name">pluralize($name)</span>       <span class="desc">Naive English pluralizer used to derive table names: ends in s/x/z OR sh/ch → <code>+es</code>; consonant <code>y</code> → drop + <code>ies</code>; else <code>+s</code>.</span>
+  </div>
+
+  <h3>Filesystem &amp; DB</h3>
+  <div class="api">
+    <span class="name">ensure_dir($dir)</span>          <span class="desc"><code>mkdir($dir, 0755, true)</code> if missing. Used by every <code>make:</code> generator before writing.</span>
+    <span class="name">db_bootstrap()</span>            <span class="desc"><code>require_once</code>s the four core files (<code>base</code>, <code>database</code>, <code>query-builder</code>, <code>schema</code>) and returns a fresh <code>AuraCore\Database</code> instance. Called by every migration / seed / wipe command.</span>
+    <span class="name">migration_class($filename)</span> <span class="desc">Strips the <code>YYYY_MM_DD_HHMMSS_</code> prefix and <code>.php</code> suffix, then produces <code>Migration_&lt;StudlyCase&gt;</code>. Example: <code>2024_05_30_120000_add_email_to_users.php</code> → <code>Migration_AddEmailToUsers</code>.</span>
+  </div>
+</section>
+
+<section id="dispatcher">
+  <h2>The Dispatch Switch</h2>
+  <p>Lines 1700–1840 implement the command dispatcher. It's a single <code>switch($command)</code> with one <code>case</code> per command, calling the matching <code>cmd_*</code> function:</p>
+<pre><code><span class="v">$exitCode</span> = <span class="n">0</span>;
+<span class="k">switch</span> (<span class="v">$command</span>) {
+    <span class="k">case</span> <span class="s">'list'</span>:                  <span class="f">cmd_list</span>(<span class="v">$commands</span>, <span class="v">$categories</span>);            <span class="k">break</span>;
+    <span class="k">case</span> <span class="s">'help'</span>:
+    <span class="k">case</span> <span class="s">'--help'</span>:
+    <span class="k">case</span> <span class="s">'-h'</span>:                    <span class="f">cmd_help</span>(<span class="v">$params</span>[<span class="n">0</span>] ?? <span class="k">null</span>, <span class="v">$commands</span>); <span class="k">break</span>;
+    <span class="k">case</span> <span class="s">'serve'</span>:                 <span class="f">cmd_serve</span>(<span class="v">$options</span>);                <span class="k">break</span>;
+    <span class="k">case</span> <span class="s">'make:controller'</span>:       <span class="v">$exitCode</span> = <span class="f">cmd_make_controller</span>(<span class="v">$params</span>, <span class="v">$options</span>); <span class="k">break</span>;
+    <span class="cm">// ... 25 more cases ...</span>
+    <span class="k">case</span> <span class="s">'--version'</span>:
+    <span class="k">case</span> <span class="s">'-v'</span>:                    <span class="f">writeln</span>(<span class="s">"AuraPHP CLI v{\$version}"</span>, <span class="s">'cyan'</span>); <span class="k">break</span>;
+    <span class="k">default</span>:                      <span class="f">error</span>(<span class="s">"Unknown command: {\$command}"</span>); <span class="v">$exitCode</span> = <span class="n">1</span>; <span class="k">break</span>;
+}
+<span class="f">exit</span>(<span class="v">$exitCode</span>);</code></pre>
+
+  <p>Generators and migration commands assign to <code>$exitCode</code> (1 on failure, 0 on success); the others don't.</p>
+</section>
+
+<section id="generators">
+  <h2>The 14 Generators</h2>
+  <p>Every <code>make:*</code> command follows the same template:</p>
+  <ol>
+    <li>Validate <code>$params[0]</code> — print usage and <code>return 1</code> if missing.</li>
+    <li>Check for <code>$options['help']</code> (where supported).</li>
+    <li>Compute <code>$className = studlyCase($name)</code>, <code>$fileName = kebabCase($name) . '.php'</code>, <code>$filePath = AURA_SITE . '/&lt;subdir&gt;/...'</code>.</li>
+    <li>Guard with <code>file_exists()</code> unless <code>--force</code> is passed.</li>
+    <li>Build the stub with a heredoc.</li>
+    <li><code>file_put_contents()</code> and <code>success("... created: site/...")</code>.</li>
+  </ol>
+
+  <div class="table-wrap"><table>
+    <thead><tr><th>Command</th><th>Output path</th><th>Namespace / Class</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>make:controller &lt;Name&gt; [--resource] [--force]</code></td><td><code>site/controllers/&lt;kebab&gt;.php</code></td><td><code>SiteControllers\&lt;Studly&gt;</code></td><td>Default: single <code>index()</code> method. <code>--resource</code> generates 7-method REST scaffold.</td></tr>
+      <tr><td><code>make:model &lt;Name&gt; [--force]</code></td><td><code>site/models/&lt;kebab&gt;.php</code></td><td>Global, <code>&lt;Studly&gt; extends AuraCore\Model</code></td><td>Auto-sets <code>$table = pluralize(kebab)</code>. <code>--no-timestamps</code> sets <code>$timestamps = false</code>.</td></tr>
+      <tr><td><code>make:migration &lt;name&gt; [--force]</code></td><td><code>site/migrations/&lt;timestamp&gt;_&lt;name&gt;.php</code></td><td>Global, <code>Migration_&lt;Studly&gt; extends AuraCore\Migration</code></td><td>Smart name parsing (see below).</td></tr>
+      <tr><td><code>make:seeder &lt;Name&gt; [--force]</code></td><td><code>site/seeders/&lt;kebab&gt;_seeder.php</code></td><td>Global, <code>&lt;Studly&gt;Seeder extends AuraCore\Seeder</code></td><td>Inserts two placeholder rows via <code>$this-&gt;db-&gt;table(...)-&gt;insert(...)</code>.</td></tr>
+      <tr><td><code>make:view &lt;name&gt; [--force]</code></td><td><code>site/views/&lt;kebab&gt;.php</code></td><td>— (plain template)</td><td>Outputs a <code>&lt;div class="container mt-5"&gt;</code> skeleton with an <code>&lt;h1&gt;</code>.</td></tr>
+      <tr><td><code>make:middleware &lt;Name&gt; [--force]</code></td><td><code>site/middleware/&lt;kebab&gt;.php</code></td><td><code>SiteMiddleware\&lt;Studly&gt;</code></td><td>Class with <code>handle($request, $next)</code>.</td></tr>
+      <tr><td><code>make:event &lt;Name&gt; [--force]</code></td><td><code>site/events/&lt;kebab&gt;.php</code></td><td><code>SiteEvents\&lt;Studly&gt;</code></td><td>Public <code>$data</code> + constructor.</td></tr>
+      <tr><td><code>make:listener &lt;Name&gt; [--force]</code></td><td><code>site/listeners/&lt;kebab&gt;.php</code></td><td><code>SiteListeners\&lt;Studly&gt;</code></td><td>Class with <code>handle($event)</code>.</td></tr>
+      <tr><td><code>make:request &lt;Name&gt; [--force]</code></td><td><code>site/requests/&lt;kebab&gt;.php</code></td><td><code>SiteRequests\&lt;Studly&gt;</code></td><td>Form-request with <code>rules()</code>, <code>messages()</code>, <code>validate()</code>, <code>authorize()</code>.</td></tr>
+      <tr><td><code>make:rule &lt;Name&gt; [--force]</code></td><td><code>site/rules/&lt;kebab&gt;.php</code></td><td><code>SiteRules\&lt;Studly&gt;</code></td><td>Custom validation rule with <code>validate()</code> + <code>message()</code>.</td></tr>
+      <tr><td><code>make:scope &lt;Name&gt; [--force]</code></td><td><code>site/scopes/&lt;kebab&gt;.php</code></td><td><code>SiteScopes\&lt;Studly&gt;</code></td><td>Class with <code>apply(Model $model, $query)</code>.</td></tr>
+      <tr><td><code>make:helper &lt;name&gt; [--force]</code></td><td><code>system/helpers/&lt;kebab&gt;_helper.php</code></td><td>— (procedural)</td><td><em>Only generator that writes to <code>system/</code>.</em> Defines a <code>&lt;name&gt;_helper_example()</code> function.</td></tr>
+      <tr><td><code>make:command &lt;Name&gt; [--force]</code></td><td><code>site/commands/&lt;kebab&gt;.php</code></td><td><code>SiteCommands\&lt;Studly&gt;</code></td><td>Custom command class — see below.</td></tr>
+      <tr><td><code>make:provider &lt;Name&gt; [--force]</code></td><td><code>site/providers/&lt;kebab&gt;_provider.php</code></td><td><code>SiteProviders\&lt;Studly&gt;Provider</code></td><td>Class with <code>register($container)</code> + <code>boot()</code>.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="smart-migration">
+  <h2>Smart Migration Name Parsing</h2>
+  <p><code>make:migration</code> inspects the name and rewrites both <code>up()</code> and <code>down()</code> bodies accordingly. The patterns are tested in this order:</p>
+
+  <div class="api">
+    <span class="name"><code>create_&lt;table&gt;_table</code></span>
+    <span class="desc">
+      <code>up()</code> → <code>Schema::create('&lt;table&gt;', function ($table) { $table-&gt;increments('id'); $table-&gt;timestamps(); });</code><br>
+      <code>down()</code> → <code>Schema::drop('&lt;table&gt;');</code>
+    </span>
+  </div>
+  <div class="api">
+    <span class="name"><code>add_&lt;col&gt;_to_&lt;table&gt;_table</code></span>
+    <span class="desc">
+      <code>up()</code> → <code>Schema::table('&lt;table&gt;', fn($t) =&gt; { $t-&gt;string('&lt;col&gt;')-&gt;nullable(); });</code><br>
+      <code>down()</code> → <code>Schema::table('&lt;table&gt;', fn($t) =&gt; { $t-&gt;dropColumn('&lt;col&gt;'); });</code>
+    </span>
+  </div>
+  <div class="api">
+    <span class="name"><code>drop_&lt;table&gt;_table</code></span>
+    <span class="desc">
+      <code>up()</code> → <code>Schema::drop('&lt;table&gt;');</code><br>
+      <code>down()</code> → empty <code>Schema::create('&lt;table&gt;', ...)</code> with commented columns.
+    </span>
+  </div>
+  <div class="api">
+    <span class="name">No match</span>
+    <span class="desc">Generic commented-out placeholders for both directions.</span>
+  </div>
+
+  <h3>Examples</h3>
+<pre><code>php aura make:migration create_users_table
+php aura make:migration add_email_to_users_table
+php aura make:migration add_status_to_orders_table
+php aura make:migration drop_legacy_logs_table
+php aura make:migration add_fulltext_index_to_articles_table   <span class="cm"># falls through to placeholder</span></code></pre>
+</section>
+
+<section id="migration-commands">
+  <h2>Migration Commands — Internals</h2>
+  <h3>Tracking table</h3>
+  <p>Auto-created on the first <code>migrate</code> or <code>migrate:status</code>:</p>
+<pre><code>CREATE TABLE IF NOT EXISTS migrations (
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    migration   VARCHAR(255) NOT NULL,
+    batch       INT UNSIGNED NOT NULL,
+    executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)</code></pre>
+  <div class="callout"><strong>Note:</strong> The <code>migrations</code> table DDL is hard-coded MySQL. The <code>migrate:fresh</code> and <code>db:wipe</code> commands also use MySQL-only syntax (<code>SET FOREIGN_KEY_CHECKS</code>, <code>SHOW TABLES</code>) — the migration subsystem is MySQL-only.</div>
+
+  <h3>File scanning</h3>
+  <p>Every migration command uses the same pattern:</p>
+<pre><code><span class="v">$files</span> = <span class="f">glob</span>(<span class="s">"{\$dir}/*.php"</span>);
+<span class="f">sort</span>(<span class="v">$files</span>);   <span class="cm">// alphabetical — relies on the YYYY_MM_DD_HHMMSS_ prefix being sortable</span></code></pre>
+  <p>The filename is then converted to a class name via <code>migration_class($filename)</code>.</p>
+
+  <h3>Batch tracking</h3>
+  <ul>
+    <li><code>migrate</code> reads <code>MAX(batch)</code>, increments by 1, and inserts every successfully-run migration of this run with the <strong>same</strong> <code>$newBatch</code> value.</li>
+    <li><code>migrate:rollback</code> reads <code>MAX(batch)</code>, fetches all rows where <code>batch = $lastBatch ORDER BY id DESC</code> (reverse order), calls <code>down()</code> on each, then <code>DELETE FROM migrations WHERE migration = ? AND batch = ?</code>.</li>
+    <li><code>migrate:reset</code> loops <code>for ($batch = $maxBatch; $batch &gt;= 1; $batch--)</code> to roll back every batch in order.</li>
+    <li><code>migrate:refresh</code> = <code>cmd_migrate_reset()</code> then <code>cmd_migrate()</code>.</li>
+  </ul>
+
+  <div class="callout warn"><strong>No transaction wrapping.</strong> Each <code>up()</code> / <code>down()</code> is called directly. A failed <code>up()</code> prints <code>FAILED</code> + the exception message and returns 1, but partial DB changes are not rolled back by the CLI.</div>
+</section>
+
+<section id="key-generate">
+  <h2>The <code>key:generate</code> Command</h2>
+  <p>Generates a 64-character hex secret (32 random bytes) and writes it to <code>.env</code>:</p>
+<pre><code><span class="v">$key</span> = <span class="f">bin2hex</span>(<span class="f">random_bytes</span>(<span class="n">32</span>));   <span class="cm">// 64 hex chars</span>
+
+<span class="k">if</span> (<span class="f">file_exists</span>(<span class="v">$envPath</span>)) {
+    <span class="cm">// Replaces existing APP_KEY=… line in place, OR appends a new one.</span>
+} <span class="k">else</span> {
+    <span class="f">file_put_contents</span>(<span class="v">$envPath</span>, <span class="s">"APP_KEY={\$key}\n"</span>);
+}</code></pre>
+  <div class="callout"><strong>Heads up:</strong> The Composer <code>PostInstall</code> class uses <code>bin2hex(random_bytes(16))</code> (32 hex chars) for the initial key, while <code>key:generate</code> uses 64. The two implementations are inconsistent.</div>
+</section>
+
+<section id="serve">
+  <h2>The <code>serve</code> Command</h2>
+  <p>Runs PHP's built-in server with the project root as the docroot:</p>
+<pre><code><span class="v">$cmd</span> = <span class="f">sprintf</span>(
+    <span class="s">'php -S %s:%d -t %s'</span>,
+    <span class="f">escapeshellarg</span>(<span class="v">$host</span>),    <span class="cm">// default 127.0.0.1</span>
+    (<span class="k">int</span>)<span class="v">$port</span>,                  <span class="cm">// default 8080</span>
+    <span class="f">escapeshellarg</span>(<span class="v">$docRoot</span>)  <span class="cm">// AURA_ROOT (NOT public/)</span>
+);
+<span class="f">passthru</span>(<span class="v">$cmd</span>);</code></pre>
+  <p>It blocks (<code>passthru()</code> waits for the child). All file requests are served from the project root so your <code>.htaccess</code> + <code>index.php</code> front-controller handles everything.</p>
+</section>
+
+<section id="route-list">
+  <h2>The <code>route:list</code> Command</h2>
+  <p>It does <strong>not</strong> parse <code>routes.php</code> as text. It actually executes the file:</p>
+<pre><code><span class="f">require_once</span> <span class="v">AURA_SYSTEM</span> . <span class="s">'/core/router.php'</span>;
+<span class="v">$_SERVER</span>[<span class="s">'REQUEST_URI'</span>] = <span class="s">'/aura-route-list'</span>;   <span class="cm">// fake request to satisfy router init</span>
+<span class="v">$router</span> = <span class="k">require</span> <span class="v">$routesFile</span>;                 <span class="cm">// execute system/config/routes.php</span>
+<span class="v">$routes</span> = <span class="v">$router</span>-&gt;<span class="f">getRoutes</span>();</code></pre>
+  <p>This means your <code>routes.php</code> file <strong>must</strong> return the <code>Router</code> instance. The CLI then renders a colour-coded table (GET=green, POST=yellow, PUT=blue, DELETE=red).</p>
+</section>
+
+<section id="custom-commands">
+  <h2>Writing Custom Commands</h2>
+  <p>There is <strong>no contract or interface</strong> for custom commands — the pattern is plain:</p>
+  <ol>
+    <li>Run <code>php aura make:command my:custom</code> (colons allowed in the name).</li>
+    <li>Open the generated <code>site/commands/my-custom.php</code>:
+<pre><code><span class="k">namespace</span> <span class="cl">SiteCommands</span>;
+
+<span class="k">class</span> <span class="cl">MyCustom</span>
+{
+    <span class="k">public</span> <span class="v">$name</span>        = <span class="s">'my-custom'</span>;
+    <span class="k">public</span> <span class="v">$description</span> = <span class="s">'Describe the my-custom command'</span>;
+    <span class="k">public</span> <span class="v">$usage</span>       = <span class="s">'my-custom [options]'</span>;
+
+    <span class="k">public function</span> <span class="f">run</span>(<span class="v">$params</span>, <span class="v">$options</span>)
+    {
+        <span class="cm">// use plain echo, or import Aura helpers</span>
+    }
+}</code></pre>
+    </li>
+    <li>Add a <code>case</code> to the dispatch switch in <code>aura</code> (around line 1700):
+<pre><code><span class="k">case</span> <span class="s">'my:custom'</span>:
+    <span class="v">$exitCode</span> = (<span class="k">new</span> \<span class="cl">SiteCommands</span>\<span class="cl">MyCustom</span>())-&gt;<span class="f">run</span>(<span class="v">$params</span>, <span class="v">$options</span>);
+    <span class="k">break</span>;</code></pre>
+    </li>
+  </ol>
+
+  <p>The CLI prints this exact <code>case</code> snippet to your terminal after generation, so you can copy-paste it.</p>
+
+  <div class="callout purple"><strong>Note:</strong> There is no service-provider auto-discovery and no commands config file. The single source of truth is the <code>switch</code> in <code>aura</code>. This keeps the tool small but means every custom command requires editing the CLI itself.</div>
+</section>
+
+<section id="postinstall">
+  <h2>The <code>PostInstall</code> Class</h2>
+  <p>Located at <code>system/installer-needs/PostInstall.php</code> (66 lines). It is intended to be wired into Composer's <code>post-install-cmd</code> hook (and prints the same banner regardless of whether it is, since the project doesn't actually register it).</p>
+
+  <h3>What it does</h3>
+  <ol>
+    <li>Computes <code>$root = dirname(__DIR__, 2)</code> — the project root.</li>
+    <li>Prints a <code>╔══ AuraPHP Framework — Installed ══╗</code> banner.</li>
+    <li>If <code>.env</code> is missing and <code>.env.example</code> exists, <code>copy()</code> it.</li>
+    <li>If <code>.env</code> exists and contains a bare <code>APP_KEY=</code> line, generates <code>bin2hex(random_bytes(16))</code> (32 hex chars — half of <code>key:generate</code>) and replaces it.</li>
+    <li>Prints a "Next Steps" block (serve, open browser, <code>php aura list</code>).</li>
+    <li>Calls <code>passthru('php aura list')</code> to dump the command list inside the Composer output.</li>
+  </ol>
+</section>
+
+<section id="relationship">
+  <h2>Relationship with the Framework</h2>
+  <p>The CLI is <strong>standalone</strong> until it needs the framework:</p>
+  <ul>
+    <li>Generators, <code>serve</code>, <code>list</code>, <code>help</code>, <code>key:generate</code>, <code>inspire</code>, and <code>about</code> (mostly) require <strong>no framework code</strong> — they're pure PHP string templating and filesystem operations.</li>
+    <li>Commands that need the framework opt in explicitly via <code>db_bootstrap()</code> (for <code>AuraCore\Database</code>, <code>Schema</code>, <code>Migration</code>, <code>Seeder</code>, <code>QueryBuilder</code>) or by <code>require_once</code>-ing <code>system/core/router.php</code> (for <code>route:list</code>).</li>
+    <li><code>route:list</code> is the most invasive: it actually executes <code>system/config/routes.php</code> to get a <code>Router</code> instance.</li>
+    <li>The CLI declares <strong>no Composer autoloader bootstrap of its own</strong>. It relies on whatever autoload is in scope. When invoked directly (<code>php aura …</code>), framework classes are reached only via explicit <code>require_once</code> of the four core files. When invoked through <code>vendor/bin/aura</code>, Composer's <code>psr-4</code> (<code>AuraCore\</code> → <code>system/core/</code>) and the <code>bin: ["aura"]</code> entry in <code>composer.json</code> load everything automatically.</li>
+  </ul>
+
+  <h3>Composer shortcuts</h3>
+  <p>With Composer installed, two scripts are exposed:</p>
+<pre><code>composer serve          <span class="cm"># → php bin/aura serve</span>
+composer route:list     <span class="cm"># → php bin/aura route:list</span></code></pre>
+</section>
+
+
+<footer class="mt-5 pt-3" style="border-top:1px solid #e0e0e0; color:#888; font-size:.8rem;">
+  <div class="d-flex justify-content-between flex-wrap gap-2">
+    <div>AuraPHP · MIT License · Framework 1.0.0 · CLI 1.2.0 · <a href="credits.html">AI-Made with OpenCode</a></div>
+    <div><a href="https://github.com/kernelk14/aura" rel="noopener" class="text-muted">⭐ GitHub</a></div>
+  </div>
+</footer>
+</main>
+</div>
+
+<script src="public/js/ownstrap.js"></script>
+<script>
+document.querySelectorAll('pre').forEach(function (pre) {
+  var btn = document.createElement('button');
+  btn.className = 'btn btn-sm copy-btn';
+  btn.textContent = 'Copy';
+  btn.style.cssText = 'position:absolute;top:8px;right:8px;';
+  btn.addEventListener('click', function () {
+    var code = pre.querySelector('code');
+    var txt  = code ? code.innerText : pre.innerText;
+    navigator.clipboard.writeText(txt).then(function () {
+      btn.textContent = 'Copied!';
+      setTimeout(function () { btn.textContent = 'Copy'; }, 1200);
+    });
+  });
+  pre.appendChild(btn);
+});
+
+// Lightweight in-page filter
+var input = document.getElementById('searchInput');
+if (input) {
+  input.addEventListener('input', function () {
+    var q = this.value.toLowerCase().trim();
+    var sections = document.querySelectorAll('.docs-main section');
+    if (!q) { sections.forEach(function (s) { s.style.display = ''; }); return; }
+    sections.forEach(function (s) {
+      s.style.display = s.textContent.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+    });
+  });
+}
+
+// Theme toggle (re-uses OwnStrap themes)
+var themeBtn   = document.getElementById('themeToggle');
+var themeIcon  = document.getElementById('themeIcon');
+var themeLabel = document.getElementById('themeLabel');
+function applyTheme(mode) {
+  var dark = (mode === 'dark');
+  document.body.classList.toggle('theme-dark',  dark);
+  document.body.classList.toggle('theme-light', !dark);
+  if (themeIcon)  themeIcon.textContent  = dark ? '☀' : '☾';
+  if (themeLabel) themeLabel.textContent = dark ? 'Light' : 'Dark';
+  if (themeBtn)   themeBtn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+if (themeBtn) {
+  applyTheme(localStorage.getItem('docs-theme') || 'light');
+  themeBtn.addEventListener('click', function () {
+    var next = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('docs-theme', next);
+  });
+}
+</script>
+
+</body>
+</html>

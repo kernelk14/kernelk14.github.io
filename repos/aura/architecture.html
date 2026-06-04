@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AuraPHP · Architecture</title>
+<meta name="description" content="AuraPHP framework documentation — Architecture." />
+<link rel="stylesheet" href="public/css/ownstrap.css" />
+<link rel="stylesheet" href="public/css/ownstrap-colors.css" />
+
+<style>
+  /* ============================================================
+     Theme variables — drive every docs-specific colour from these.
+     OwnStrap already has its own :root palette; ours live alongside.
+     ============================================================ */
+  :root, body.theme-light {
+    /* === Aura Slate — light mode ===
+       Single slate/sky family. All surfaces, text, borders, and accents
+       are pulled from this palette so the page reads as one design. */
+    --docs-bg:            #ffffff;
+    --docs-bg-soft:       #f8fafc;  /* slate-50  — sidebar, navbar */
+    --docs-bg-elevated:   #ffffff;  /* cards, popovers */
+    --docs-bg-hero:       linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #faf5ff 100%);
+    --docs-fg:            #0f172a;  /* slate-900 — primary text */
+    --docs-fg-soft:       #475569;  /* slate-600 — secondary text */
+    --docs-fg-mute:       #94a3b8;  /* slate-400 — tertiary text */
+    --docs-border:        #e2e8f0;  /* slate-200 — primary border */
+    --docs-border-soft:   #f1f5f9;  /* slate-100 — soft border */
+    --docs-border-dashed: #cbd5e1;  /* slate-300 — dashed divider */
+    --docs-code-bg:       #0f172a;  /* slate-900 — code blocks */
+    --docs-code-fg:       #e2e8f0;  /* slate-200 — code text */
+    --docs-table-th-bg:   #f8fafc;  /* slate-50  — table header */
+    --docs-table-row:     #f8fafc;  /* slate-50  — row stripe */
+    --docs-link:          #0284c7;  /* sky-600   — body links */
+    --docs-link-soft-bg:  rgba(2,132,199,.08);
+    --docs-shadow:        0 1px 2px rgba(15,23,42,.04), 0 1px 3px rgba(15,23,42,.06);
+    --docs-nav-h:         56px;
+
+    /* Callout tints (light) — bg = low-alpha brand, bd = solid brand */
+    --callout-info-bg:    rgba(2,132,199,.07);   --callout-info-fg:    #0c4a6e;  --callout-info-bd:    #0284c7;
+    --callout-warn-bg:    rgba(217,119,6,.07);   --callout-warn-fg:    #78350f;  --callout-warn-bd:    #d97706;
+    --callout-success-bg: rgba(5,150,105,.07);   --callout-success-fg: #064e3b;  --callout-success-bd: #059669;
+    --callout-danger-bg:  rgba(220,38,38,.07);   --callout-danger-fg:  #7f1d1d;  --callout-danger-bd:  #dc2626;
+    --callout-purple-bg:  rgba(147,51,234,.07);  --callout-purple-fg:  #581c87;  --callout-purple-bd:  #9333ea;
+  }
+  body.theme-dark {
+    /* === Aura Slate — dark mode ===
+       Same slate family, lifted two steps. Cards = same as sidebar for
+       cohesion, distinguished by border + shadow only. */
+    --docs-bg:            #0f172a;  /* slate-900 — body */
+    --docs-bg-soft:       #1e293b;  /* slate-800 — sidebar, navbar */
+    --docs-bg-elevated:   #1e293b;  /* slate-800 — cards (matches sidebar) */
+    --docs-bg-hero:       linear-gradient(135deg, rgba(2,132,199,.18) 0%, rgba(147,51,234,.12) 50%, rgba(15,23,42,0) 100%);
+    --docs-fg:            #f1f5f9;  /* slate-100 — primary text */
+    --docs-fg-soft:       #cbd5e1;  /* slate-300 — secondary text */
+    --docs-fg-mute:       #94a3b8;  /* slate-400 — tertiary text */
+    --docs-border:        #334155;  /* slate-700 — primary border */
+    --docs-border-soft:   #1e293b;  /* slate-800 — soft border */
+    --docs-border-dashed: #475569;  /* slate-600 — dashed divider */
+    --docs-code-bg:       #020617;  /* slate-950 — code blocks (deeper than body) */
+    --docs-code-fg:       #e2e8f0;  /* slate-200 — code text */
+    --docs-table-th-bg:   #1e293b;  /* slate-800 — table header */
+    --docs-table-row:     #172033;  /* between bg and bg-soft — visible stripe */
+    --docs-link:          #38bdf8;  /* sky-400  — body links */
+    --docs-link-soft-bg:  rgba(56,189,248,.12);
+    --docs-shadow:        0 1px 2px rgba(0,0,0,.3), 0 1px 3px rgba(0,0,0,.4);
+
+    --callout-info-bg:    rgba(56,189,248,.10);  --callout-info-fg:    #bae6fd;  --callout-info-bd:    #38bdf8;
+    --callout-warn-bg:    rgba(251,191,36,.10);  --callout-warn-fg:    #fde68a;  --callout-warn-bd:    #fbbf24;
+    --callout-success-bg: rgba(52,211,153,.10);  --callout-success-fg: #a7f3d0;  --callout-success-bd: #34d399;
+    --callout-danger-bg:  rgba(248,113,113,.10); --callout-danger-fg:  #fecaca;  --callout-danger-bd:  #f87171;
+    --callout-purple-bg:  rgba(192,132,252,.12); --callout-purple-fg:  #e9d5ff;  --callout-purple-bd:  #c084fc;
+  }
+
+  body { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--docs-bg); color: var(--docs-fg); transition: background-color .2s, color .2s; }
+
+  .docs-layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    min-height: calc(100vh - var(--docs-nav-h));
+  }
+  .docs-layout > .sidebar {
+    position: sticky;
+    top: var(--docs-nav-h);
+    max-height: calc(100vh - var(--docs-nav-h));
+    align-self: start;
+  }
+  .docs-main { padding: 2rem 3rem 4rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .docs-main h1 { color: var(--docs-fg); }
+  .docs-main h2 {
+    font-size: 1.875rem; margin: 0 0 .5rem;
+    padding-bottom: .5rem; border-bottom: 1px solid var(--docs-border);
+    color: var(--docs-fg);
+  }
+  .docs-main h3 { font-size: 1.375rem; margin: 1.75rem 0 .5rem; color: var(--docs-fg); }
+  .docs-main h4 { font-size: 1.05rem; margin: 1.25rem 0 .35rem; color: var(--docs-fg); }
+  .docs-main p  { color: var(--docs-fg-soft); }
+  .docs-main li { color: var(--docs-fg-soft); }
+  .docs-main a  { color: var(--docs-link); }
+  .docs-main section { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+  .docs-main section + section { border-top: 1px dashed var(--docs-border-dashed); }
+  .docs-main strong, .docs-main b { color: var(--docs-fg); }
+
+  /* Card adjustments in dark mode (OwnStrap's .card has explicit white bg) */
+  .card { padding: 1rem; background: var(--docs-bg-elevated); border: 1px solid var(--docs-border); border-radius: 8px; color: var(--docs-fg); }
+  .card .card-title { color: var(--docs-fg); margin: 0 0 .35rem; font-size: 1rem; font-weight: 700; }
+  .card .card-text  { color: var(--docs-fg-soft); margin: 0; font-size: .875rem; }
+  .card-body { padding: 1rem; }
+  .card p:last-child, .card .card-text:last-child { margin-bottom: 0; }
+  /* Specificity bump: win over OwnStrap's .theme-dark .card (gray) */
+  body.theme-dark .card { background: var(--docs-bg-elevated); border-color: var(--docs-border); color: var(--docs-fg); }
+
+  /* Grid of feature cards (used in intro) */
+  .grid {
+    display: grid; gap: .85rem; margin: 1rem 0 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .grid .card { transition: border-color .15s, transform .15s; }
+  .grid .card:hover { border-color: var(--docs-link); transform: translateY(-1px); }
+  .grid .card h4 { color: var(--docs-fg); margin: 0 0 .35rem; font-size: 1rem; font-weight: 700; }
+  .grid .card p  { color: var(--docs-fg-soft); margin: 0; font-size: .875rem; }
+  .grid .card a  { color: var(--docs-link); }
+
+  /* Sidebar — uses OwnStrap's .sidebar component.
+     Only layout/positioning adjustments are needed here:
+     stick it below the navbar and cap its height to the viewport. */
+
+  /* Hero on landing */
+  .docs-hero {
+    background: var(--docs-bg-hero), var(--docs-bg-elevated);
+    border: 1px solid var(--docs-border); border-radius: 10px;
+    padding: 2rem 2.25rem; margin-bottom: 1.5rem;
+    color: var(--docs-fg);
+  }
+  .docs-hero h1 { font-size: 2.5rem; margin: 0 0 .35rem; letter-spacing: -.5px; }
+  .docs-hero p  { color: var(--docs-fg-soft); font-size: 1.05rem; margin: 0 0 1rem; }
+
+  /* TOC grid (landing) */
+  .docs-toc {
+    display: grid; gap: .75rem; margin: 1rem 0 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .docs-toc a {
+    display: block; padding: .85rem 1rem;
+    border: 1px solid var(--docs-border); border-radius: 8px;
+    background: var(--docs-bg-elevated); color: var(--docs-fg);
+    text-decoration: none; transition: all .15s;
+  }
+  .docs-toc a:hover { border-color: var(--docs-link); color: var(--docs-link); transform: translateY(-1px); }
+  .docs-toc a strong { display: block; font-size: .95rem; }
+  .docs-toc a span   { color: var(--docs-fg-mute); font-size: .8rem; }
+
+  /* Callouts (used in body content) */
+  .callout {
+    border-left: 3px solid var(--callout-info-bd);
+    background: var(--callout-info-bg);
+    padding: .75rem 1rem; border-radius: 6px;
+    margin: .9rem 0; color: var(--docs-fg-soft);
+  }
+  .callout strong { color: var(--docs-fg); }
+  .callout.warn    { border-color: var(--callout-warn-bd);    background: var(--callout-warn-bg); }
+  .callout.success { border-color: var(--callout-success-bd); background: var(--callout-success-bg); }
+  .callout.danger  { border-color: var(--callout-danger-bd);  background: var(--callout-danger-bg); }
+  .callout.purple  { border-color: var(--callout-purple-bd);  background: var(--callout-purple-bg); }
+
+  /* API doc-list (definition grid) */
+  .api {
+    display: grid; grid-template-columns: 260px 1fr;
+    gap: .35rem .9rem; margin: .75rem 0; font-size: .875rem;
+  }
+  .api .name { color: var(--docs-link); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .82rem; }
+  .api .desc { color: var(--docs-fg-soft); }
+  .api .desc code { background: var(--docs-bg-soft); border: 1px solid var(--docs-border); color: var(--docs-fg); }
+
+  /* Code block (OwnStrap pre/code with our colour palette) */
+  pre { background: var(--docs-code-bg) !important; border-color: #1e293b !important; }
+  pre code { color: var(--docs-code-fg) !important; }
+  pre .c  { color: #64748b; font-style: italic; }
+  pre .k  { color: #c084fc; }
+  pre .s  { color: #86efac; }
+  pre .n  { color: #fdba74; }
+  pre .v  { color: #fde68a; }
+  pre .f  { color: #7dd3fc; }
+  pre .cl { color: #f0abfc; }
+  pre .t  { color: #fca5a5; }
+
+  /* Inline <code> in running text */
+  .docs-main code { background: var(--docs-bg-soft); border: 1px solid var(--docs-border); color: var(--docs-fg); }
+  .docs-main pre code { background: transparent; border: 0; }
+
+  /* Doc table wrapper (used in body content) */
+  .table-wrap { overflow-x: auto; margin: .75rem 0; border: 1px solid var(--docs-border); border-radius: 8px; background: var(--docs-bg-elevated); }
+  .table-wrap table { width: 100%; border-collapse: collapse; font-size: .875rem; color: var(--docs-fg); }
+  .table-wrap th { background: var(--docs-table-th-bg); text-align: left; padding: .65rem .85rem; font-size: .72rem; text-transform: uppercase; letter-spacing: .6px; border-bottom: 1px solid var(--docs-border); color: var(--docs-fg); font-weight: 700; }
+  .table-wrap td { padding: .65rem .85rem; border-bottom: 1px solid var(--docs-border-soft); vertical-align: top; color: var(--docs-fg-soft); }
+  .table-wrap tbody tr:nth-child(even) td { background: var(--docs-table-row); }
+  .table-wrap tr:last-child td { border-bottom: 0; }
+  .table-wrap code { background: var(--docs-bg-soft); border-color: var(--docs-border); color: var(--docs-fg); padding: 1px 5px; }
+
+  /* Tree widget (file structure) */
+  .tree { background: var(--docs-code-bg); color: #cbd5e1; padding: 1rem; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .8rem; line-height: 1.6; overflow-x: auto; border: 1px solid #1e293b; }
+  .tree .d  { color: #7dd3fc; }
+  .tree .f  { color: #fde68a; }
+  .tree .cm { color: #64748b; }
+
+  /* Card adjustments in dark mode (handled by base .card rule above) */
+
+  /* Page footer */
+  .docs-main footer { color: var(--docs-fg-mute) !important; border-top-color: var(--docs-border) !important; }
+  .docs-main footer a { color: var(--docs-fg-mute) !important; }
+  .docs-main footer a:hover { color: var(--docs-link) !important; }
+
+  /* Navbar — blend with the body so the top of the page doesn't pop out,
+     then stick it to the top of the viewport so it stays visible as the
+     user scrolls. OwnStrap's default .navbar is cream (#FFFFF0); we soften
+     it in light mode and match the sidebar in dark mode. */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    height: var(--docs-nav-h);
+    background: var(--docs-bg-soft);
+    border-bottom: 1px solid var(--docs-border);
+    padding: 0 1.25rem;
+  }
+  /* Specificity bump: win over OwnStrap's .theme-dark .navbar border-color */
+  body.theme-dark .navbar { border-bottom-color: var(--docs-border); }
+  .navbar .navbar-brand { color: var(--docs-fg); font-weight: 800; letter-spacing: .3px; }
+  .navbar .nav-link { color: var(--docs-fg-soft); padding: .35rem .6rem; border-radius: 5px; font-size: .9rem; }
+  .navbar .nav-link:hover { color: var(--docs-link); background: var(--docs-link-soft-bg); }
+  .navbar .container-fluid { padding: 0; }
+  .navbar .text-muted { color: var(--docs-fg-mute) !important; }
+
+  /* "On this page" anchor row at the top of multi-section pages */
+  .docs-main > div.d-flex.flex-wrap a { color: var(--docs-fg-mute) !important; }
+  .docs-main > div.d-flex.flex-wrap a:hover { color: var(--docs-link) !important; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .docs-layout { grid-template-columns: 1fr; }
+    .docs-layout > .sidebar { position: relative; top: auto; max-height: none; height: auto; }
+    .docs-main { padding: 1.25rem 1rem 3rem; }
+  }
+
+  /* Print: hide sidebar */
+  @media print {
+    .sidebar, #themeToggle { display: none !important; }
+    .docs-layout { grid-template-columns: 1fr; }
+  }
+</style>
+
+</head>
+<body class="theme-light">
+<nav class="navbar">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    <a href="index.html" class="navbar-brand">AuraPHP <span class="text-muted fw-normal small">· Docs</span></a>
+    <div class="navbar-nav d-flex align-items-center" style="gap:.25rem; flex-direction:row;">
+      <a class="nav-link" href="cli.html">CLI</a>
+      <a class="nav-link" href="management.html">Management</a>
+      <a class="nav-link" href="ownstrap.html">OwnStrap</a>
+      <a class="nav-link" href="https://github.com/kernelk14/aura" rel="noopener">GitHub</a>
+      <button id="themeToggle" class="btn btn-sm btn-outline-primary ms-2" type="button" aria-label="Toggle theme">
+        <span id="themeIcon">☾</span> <span id="themeLabel">Dark</span>
+      </button>
+    </div>
+  </div>
+</nav>
+<div class="docs-layout">
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="sidebar-logo">A</div>
+    <div class="sidebar-brand-name">
+      <strong>Aura<span>PHP</span></strong>
+      <span class="sidebar-brand-version">Framework 1.0 · CLI 1.2 · MIT</span>
+    </div>
+  </a>
+
+  <div class="sidebar-search">
+    <input type="search" id="searchInput" placeholder="Search…" />
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Overview</div>
+      <a href="index.html" class="sidebar-link ">Introduction</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Getting Started</div>
+      <a href="getting-started.html" class="sidebar-link ">Installation &amp; Quick Start</a>
+      <a href="getting-started.html#structure" class="sidebar-link sidebar-link-sub">Directory Structure</a>
+      <a href="getting-started.html#namespaces" class="sidebar-link sidebar-link-sub">Namespaces</a>
+      <a href="getting-started.html#server" class="sidebar-link sidebar-link-sub">Server Config</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Core</div>
+      <a href="architecture.html" class="sidebar-link active">Architecture</a>
+      <a href="routing.html" class="sidebar-link ">Routing &amp; Controllers</a>
+      <a href="http.html" class="sidebar-link ">Request · Response · Events</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Data Layer</div>
+      <a href="database.html" class="sidebar-link ">Database &amp; Query Builder</a>
+      <a href="migrations.html" class="sidebar-link ">Migrations &amp; Seeders</a>
+      <a href="models.html" class="sidebar-link ">Models &amp; Relations</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Presentation</div>
+      <a href="views.html" class="sidebar-link ">Views &amp; Helpers</a>
+      <a href="ownstrap.html" class="sidebar-link ">OwnStrap Frontend</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Security</div>
+      <a href="security.html" class="sidebar-link ">Auth, Validation &amp; Middleware</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tooling</div>
+      <a href="cli.html" class="sidebar-link ">CLI Commands</a>
+      <a href="aura.html" class="sidebar-link ">The <code>aura</code> Tool</a>
+      <a href="management.html" class="sidebar-link ">Management Panel</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="config.html" class="sidebar-link ">Configuration &amp; Env</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">About</div>
+      <a href="credits.html" class="sidebar-link ">AI-Made · Credits</a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="https://github.com/kernelk14/aura" rel="noopener">⭐ GitHub →</a>
+  </div>
+</aside>
+<main class="docs-main">
+<div class="d-flex flex-wrap gap-2 mb-3" style="font-size:.78rem;"><a href="#bootstrap" class="text-muted small">Bootstrap (</a> · <a href="#autoload" class="text-muted small">Autoloader</a> · <a href="#patterns" class="text-muted small">Design Patterns</a> · <a href="#container" class="text-muted small">Service Container / DI</a> · <a href="#env" class="text-muted small">DotEnv</a> · <a href="#logger" class="text-muted small">Logger</a> · <a href="#errors" class="text-muted small">Error Handler</a></div>
+<section id="bootstrap"><h2>Bootstrap (<code>index.php</code>)</h2>
+<p>The entry point runs a deterministic sequence of steps before handing control to the router:</p>
+<ol>
+<li>Defines <code>SYSTEM_PATH</code> and <code>SITE_PATH</code> constants.</li>
+<li>Loads <code>vendor/autoload.php</code> if Composer is installed.</li>
+<li>Manually <code>require_once</code>s the 22 core classes from <code>system/core/</code> plus the helper file.</li>
+<li>Registers <code>aurora_autoload()</code> — a custom PSR-4-flavoured autoloader.</li>
+<li>Calls <code>AuraCore\ErrorHandler::register(true)</code> — wires PHP error/exception/shutdown handlers.</li>
+<li>Loads <code>.env</code> via <code>AuraCore\DotEnv::load()</code>.</li>
+<li>Parses <code>$_SERVER['REQUEST_URI']</code>, trimming slashes.</li>
+<li>If the URI starts with <code>/management</code>, hands off to <code>AuraCore\Management::run()</code>.</li>
+<li>Otherwise requires <code>system/config/routes.php</code> and calls <code>$router-&gt;dispatch()</code>.</li>
+<li>On 404, returns JSON for AJAX requests, otherwise renders <code>site/views/404.php</code> or a built-in dark 404 page.</li>
+</ol></section>
+<section id="autoload"><h2>Autoloader</h2>
+<p>AuraPHP registers a custom autoloader (<code>aurora_autoload</code>) that maps namespaces to directories and is <em>case-flexible</em> — it tries PascalCase, lowercase, snake_case, and kebab-case filename variants for the requested class, so a class <code>User_Model</code> can live in <code>user-model.php</code>, <code>user_model.php</code>, <code>User_Model.php</code>, or <code>user.php</code>.</p>
+<h3>Mapping table</h3>
+<div class="table-wrap"><table><thead><tr><th>Namespace prefix</th><th>Directory</th></tr></thead><tbody>
+<tr><td><code>AuraCore\</code></td><td><code>system/core/</code></td></tr>
+<tr><td><code>SiteModels\</code></td><td><code>site/models/</code></td></tr>
+<tr><td><code>SiteControllers\</code></td><td><code>site/controllers/</code></td></tr>
+<tr><td><code>SiteMiddleware\</code></td><td><code>site/middleware/</code></td></tr>
+</tbody></table></div></section>
+<section id="patterns"><h2>Design Patterns</h2>
+<div class="table-wrap"><table><thead><tr><th>Pattern</th><th>Where it's used</th></tr></thead><tbody>
+<tr><td>Front Controller</td><td><code>index.php</code> — all requests funnel through it</td></tr>
+<tr><td>MVC</td><td><code>site/controllers/</code>, <code>site/models/</code>, <code>site/views/</code></td></tr>
+<tr><td>Active Record</td><td><code>AuraCore\Model</code> — one instance = one row, <code>save()</code>/<code>delete()</code> persist</td></tr>
+<tr><td>Query Builder</td><td><code>AuraCore\QueryBuilder</code> — fluent SQL generator with parameter binding</td></tr>
+<tr><td>Schema Builder</td><td><code>AuraCore\Schema</code> + <code>Blueprint</code> + <code>ColumnDefinition</code> + <code>ForeignKey</code></td></tr>
+<tr><td>Facade-style statics</td><td><code>Auth</code>, <code>Event</code>, <code>Schema</code>, <code>DotEnv</code></td></tr>
+<tr><td>Service Locator / Registry</td><td><code>Base::container()</code>, <code>Base::config()</code> (static cache)</td></tr>
+<tr><td>Singleton</td><td>DB connections per group; <code>Container::singleton()</code></td></tr>
+<tr><td>Pipeline / Chain of Responsibility</td><td><code>MiddlewarePipeline</code> (nested closures via <code>array_reduce</code>)</td></tr>
+<tr><td>Strategy</td><td><code>Database</code> driver strategies; <code>Validator</code> rules</td></tr>
+<tr><td>Factory</td><td><code>Container::make()</code> uses reflection to auto-resolve dependencies</td></tr>
+<tr><td>Template Method</td><td><code>Model::boot()</code> + trait <code>boot&lt;Trait&gt;()</code> hooks</td></tr>
+<tr><td>Observer / Event Dispatcher</td><td><code>Event::listen/dispatch</code></td></tr>
+<tr><td>Decorator</td><td>Middleware wraps a request/response chain</td></tr>
+<tr><td>Convention over Configuration</td><td><code>User_Model</code> → <code>user_model.php</code> → table <code>user_models</code></td></tr>
+<tr><td>Fluent Interface</td><td><code>$qb-&gt;where()-&gt;whereIn()-&gt;orderBy()-&gt;limit()-&gt;get()</code></td></tr>
+<tr><td>Eager Loading</td><td><code>eagerLoadRelation()</code> batches <code>whereIn</code> queries to avoid N+1</td></tr>
+</tbody></table></div></section>
+<section id="container"><h2>Service Container / DI</h2>
+<p><code>AuraCore\Container</code> is a small but powerful IoC container with reflection-based auto-wiring.</p>
+<div class="api">
+<span class="name">bind($abstract, $concrete = null)</span> <span class="desc">Register a binding. If <code>$concrete</code> is a closure it's invoked on each <code>make()</code>; otherwise the class is auto-built.</span>
+<span class="name">singleton($abstract, $concrete = null)</span> <span class="desc">Same as <code>bind()</code> but the result is cached.</span>
+<span class="name">instance($abstract, $instance)</span> <span class="desc">Register an existing object instance.</span>
+<span class="name">make($abstract)</span>           <span class="desc">Resolve a binding (singleton-aware).</span>
+<span class="name">call($callable, $parameters = [])</span> <span class="desc">Reflection-based method invoker. Resolves typed parameters from the container. Accepts <code>'Class@method'</code> strings.</span>
+<span class="name">build($class)</span>             <span class="desc">Reflects the constructor, resolves typed dependencies, instantiates the class.</span>
+</div>
+<h3>Service Providers</h3>
+<p>Providers live in <code>site/providers/</code>, namespace <code>SiteProviders\</code>, and implement:</p>
+<pre><code><span class="k">namespace</span> <span class="cl">SiteProviders</span>;
+
+<span class="k">use</span> <span class="cl">AuraCore\Container</span>;
+
+<span class="k">class</span> <span class="cl">AppServiceProvider</span>
+{
+    <span class="k">public function</span> <span class="f">register</span>(<span class="cl">Container</span> <span class="v">$c</span>): <span class="k">void</span>
+    {
+        <span class="v">$c</span>-&gt;<span class="f">singleton</span>(<span class="s">'mailer'</span>, <span class="k">function</span> () {
+            <span class="k">return new</span> <span class="cl">Mailer</span>(<span class="f">config</span>(<span class="s">'mail.from'</span>));
+        });
+    }
+
+    <span class="k">public function</span> <span class="f">boot</span>(): <span class="k">void</span>
+    {
+        <span class="cm">// post-resolution hooks</span>
+    }
+}</code></pre></section>
+<section id="env"><h2>DotEnv</h2>
+<p><code>AuraCore\DotEnv</code> is a hand-rolled <code>.env</code> parser — no Composer dependency.</p>
+<ul>
+<li>Supports <code>KEY=VALUE</code> lines, quoted values, and <code>${OTHER_VAR}</code> interpolation.</li>
+<li>Comments start with <code>#</code>.</li>
+<li><code>DotEnv::env($key, $default = null)</code> type-casts <code>true</code>/<code>false</code>/<code>null</code>/<code>empty</code> strings and reads from <code>$_ENV</code> first, then <code>getenv()</code>.</li>
+</ul>
+<pre><code>APP_KEY=0123456789abcdef0123456789abcdef
+APP_DEBUG=true
+DB_HOST=127.0.0.1
+DB_NAME="${APP_NAME}_production"</code></pre></section>
+<section id="logger"><h2>Logger</h2>
+<p>Daily rotating log files at <code>storage/logs/YYYY-MM-DD.log</code>.</p>
+<ul>
+<li>Levels: <code>DEBUG</code>, <code>INFO</code>, <code>NOTICE</code>, <code>WARNING</code>, <code>ERROR</code>, <code>CRITICAL</code>.</li>
+<li>Configurable minimum level filter.</li>
+<li>Line format: <code>[&lt;date&gt;] &lt;LEVEL&gt;: &lt;message&gt; &lt;json-context&gt;</code>.</li>
+</ul>
+<pre><code><span class="v">$this</span>-><span class="f">logger</span>()-&gt;<span class="f">info</span>(<span class="s">'User logged in'</span>, [<span class="s">'user_id'</span> =&gt; <span class="v">$id</span>]);
+<span class="v">$this</span>-><span class="f">logger</span>(<span class="s">'payments'</span>)-&gt;<span class="f">error</span>(<span class="s">'Charge failed'</span>, [<span class="s">'order'</span> =&gt; <span class="v">$orderId</span>]);</code></pre></section>
+<section id="errors"><h2>Error Handler</h2>
+<p><code>AuraCore\ErrorHandler::register($debug = true)</code> wires <code>set_error_handler</code>, <code>set_exception_handler</code>, and a shutdown function.</p>
+<ul>
+<li><strong>Debug on ($debug = true):</strong> renders a dark-themed HTML page with the error class, message, file/line, source code snippet, formatted stack trace, and argument display. CLI gets ANSI-coloured output instead.</li>
+<li><strong>Debug off:</strong> a minimal "500 Internal Server Error" message.</li>
+</ul></section>
+<footer class="mt-5 pt-3" style="border-top:1px solid #e0e0e0; color:#888; font-size:.8rem;">
+  <div class="d-flex justify-content-between flex-wrap gap-2">
+    <div>AuraPHP · MIT License · Framework 1.0.0 · CLI 1.2.0 · <a href="credits.html">AI-Made with OpenCode</a></div>
+    <div><a href="https://github.com/kernelk14/aura" rel="noopener" class="text-muted">⭐ GitHub</a></div>
+  </div>
+</footer>
+</main>
+</div>
+
+<script src="public/js/ownstrap.js"></script>
+<script>
+document.querySelectorAll('pre').forEach(function (pre) {
+  var btn = document.createElement('button');
+  btn.className = 'btn btn-sm copy-btn';
+  btn.textContent = 'Copy';
+  btn.style.cssText = 'position:absolute;top:8px;right:8px;';
+  btn.addEventListener('click', function () {
+    var code = pre.querySelector('code');
+    var txt  = code ? code.innerText : pre.innerText;
+    navigator.clipboard.writeText(txt).then(function () {
+      btn.textContent = 'Copied!';
+      setTimeout(function () { btn.textContent = 'Copy'; }, 1200);
+    });
+  });
+  pre.appendChild(btn);
+});
+
+// Lightweight in-page filter
+var input = document.getElementById('searchInput');
+if (input) {
+  input.addEventListener('input', function () {
+    var q = this.value.toLowerCase().trim();
+    var sections = document.querySelectorAll('.docs-main section');
+    if (!q) { sections.forEach(function (s) { s.style.display = ''; }); return; }
+    sections.forEach(function (s) {
+      s.style.display = s.textContent.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+    });
+  });
+}
+
+// Theme toggle (re-uses OwnStrap themes)
+var themeBtn   = document.getElementById('themeToggle');
+var themeIcon  = document.getElementById('themeIcon');
+var themeLabel = document.getElementById('themeLabel');
+function applyTheme(mode) {
+  var dark = (mode === 'dark');
+  document.body.classList.toggle('theme-dark',  dark);
+  document.body.classList.toggle('theme-light', !dark);
+  if (themeIcon)  themeIcon.textContent  = dark ? '☀' : '☾';
+  if (themeLabel) themeLabel.textContent = dark ? 'Light' : 'Dark';
+  if (themeBtn)   themeBtn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+if (themeBtn) {
+  applyTheme(localStorage.getItem('docs-theme') || 'light');
+  themeBtn.addEventListener('click', function () {
+    var next = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('docs-theme', next);
+  });
+}
+</script>
+
+</body>
+</html>
