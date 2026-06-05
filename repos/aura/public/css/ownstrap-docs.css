@@ -253,17 +253,86 @@
   .docs-main > div.d-flex.flex-wrap a:hover { color: var(--docs-link) !important; }
 
   /* ============================================================
-     Mobile / responsive
-     - ≤900px: hamburger button appears, sidebar becomes an
-       off-canvas drawer that slides in from the left with a
-       dimmed backdrop. Body scroll is locked while open.
-     - ≤480px: extra compaction for small phones.
+     Responsive — fluid-first with breakpoint refinements
+     ----------------------------------------------------------------
+     Strategy:
+       1. clamp() for fluid font + padding (scales smoothly 320→1920px)
+       2. Breakpoints only flip layout (grid columns, sidebar mode)
+       3. Mobile drawer for ≤900px
+       4. Landscape phone: cap sidebar height, tighten padding
+       5. Tablet 901–1100px: slightly narrower sidebar
+       6. Safety nets: overflow-x hidden, word-wrap, responsive media
      ============================================================ */
+
+  /* --- Fluid typography (no jumps, just smooth scaling) --- */
+  .docs-main h1 { font-size: clamp(1.5rem, 1.1rem + 2vw, 2.25rem); line-height: 1.2; }
+  .docs-main h2 { font-size: clamp(1.25rem, 1rem + 1.2vw, 1.75rem); line-height: 1.25; }
+  .docs-main h3 { font-size: clamp(1.05rem, .95rem + .5vw, 1.25rem); line-height: 1.3; }
+  .docs-main p, .docs-main li { line-height: 1.65; }
+  .docs-main pre      { font-size: clamp(.78rem, .72rem + .2vw, .875rem); }
+  .docs-main pre.tree { font-size: clamp(.68rem, .62rem + .25vw, .8rem); }
+  .docs-hero h1       { font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.75rem); }
+  .docs-hero .lead    { font-size: clamp(.95rem, .9rem + .25vw, 1.1rem); }
+
+  /* --- Fluid page padding --- */
+  .docs-main { padding: clamp(1rem, .5rem + 2vw, 2rem) clamp(.75rem, .25rem + 2vw, 3rem) clamp(2rem, 1rem + 4vw, 4rem); }
+  .callout   { padding: clamp(.75rem, .6rem + .6vw, 1rem) clamp(.9rem, .6rem + 1vw, 1.25rem); }
+
+  /* --- Safety nets --- */
+  html, body { overflow-x: hidden; }
+  img, video, svg, iframe { max-width: 100%; height: auto; }
+  /* Break long words / URLs so they never overflow the viewport */
+  .docs-main p, .docs-main li, .docs-main dd, .callout, .api .desc {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  /* Preserve code blocks (don't break inside them) */
+  code, pre, .api .name, pre.tree { overflow-wrap: normal; word-break: normal; }
+
+  /* --- Navbar sizing --- */
+  #docsNavbar { min-height: var(--docs-nav-h); flex-shrink: 0; }
+  .navbar-brand {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(1rem, .95rem + .2vw, 1.25rem);
+  }
+  .navbar > .container-fluid { gap: .5rem; }
+
+  /* --- Mobile sidebar toggle button --- */
+  .sidebar-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    min-width: 44px;
+    min-height: 44px;
+    padding: .5rem .75rem;
+    background: transparent;
+    color: var(--docs-fg);
+    border: 1px solid var(--docs-border);
+    border-radius: 6px;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .sidebar-toggle-btn:hover  { background: var(--docs-bg-soft); border-color: var(--docs-link); }
+  .sidebar-toggle-btn:focus-visible { outline: 2px solid var(--docs-link); outline-offset: 2px; }
+  .sidebar-toggle-icon  { font-size: 1.2rem; line-height: 1; }
+  .sidebar-toggle-label { font-size: .9rem; font-weight: 500; }
+
+  /* --- Tablet (901–1100px): narrower sidebar --- */
+  @media (max-width: 1100px) {
+    .docs-layout { grid-template-columns: 220px minmax(0, 1fr); }
+  }
+
+  /* --- Phone (≤900px): sidebar becomes drawer --- */
   @media (max-width: 900px) {
-    /* Drop the sidebar out of the grid flow */
     .docs-layout { grid-template-columns: 1fr; }
 
-    /* Sidebar → off-canvas drawer */
     .docs-layout > .sidebar {
       position: fixed;
       top: var(--docs-nav-h);
@@ -276,11 +345,14 @@
       transform: translateX(-100%);
       transition: transform .25s ease;
       overflow-y: auto;
+      overscroll-behavior: contain;
       box-shadow: 0 4px 20px rgba(0,0,0,.18);
+      /* Allow swipe-to-close */
+      touch-action: pan-y;
     }
     body.sidebar-open .docs-layout > .sidebar { transform: translateX(0); }
 
-    /* Backdrop (semi-transparent overlay) */
+    /* Backdrop */
     body.sidebar-open { overflow: hidden; }
     body.sidebar-open::after {
       content: "";
@@ -293,48 +365,50 @@
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* Page padding */
-    .docs-main { padding: 1.25rem 1rem 3rem; }
-
-    /* Typography scales down */
-    .docs-main h1 { font-size: 1.75rem; line-height: 1.25; }
-    .docs-main h2 { font-size: 1.35rem; line-height: 1.3; }
-    .docs-main h3 { font-size: 1.1rem; }
-    .docs-main p, .docs-main li { line-height: 1.6; }
-    .docs-main pre { font-size: .8rem; }
-    .docs-main pre.tree { font-size: .72rem; line-height: 1.4; }
-
-    /* Hero & TOC grid stack to one column */
+    /* Grids stack */
     .docs-toc-grid { grid-template-columns: 1fr; gap: .75rem; }
-    .docs-hero h1 { font-size: 2rem; }
+    .api           { grid-template-columns: 1fr; gap: .25rem; }
 
-    /* API definition list stacks name above desc */
-    .api { grid-template-columns: 1fr; gap: .25rem; }
-
-    /* Tables scroll horizontally inside their wrapper */
+    /* Tables scroll horizontally */
     .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .table-wrap > table { min-width: 480px; }
 
-    /* Callouts a touch more compact */
-    .callout { padding: .85rem 1rem; }
-
-    /* Touch targets: minimum 44px for hit-friendly taps */
+    /* Touch targets ≥ 44px */
     .btn { min-height: 44px; padding: .5rem 1rem; }
     .nav-link { padding: .5rem .65rem; }
     .sidebar-link, .sidebar-link-sub { padding: .55rem .85rem; }
   }
 
-  /* Small phones — extra compaction */
-  @media (max-width: 480px) {
-    .docs-main { padding: 1rem .75rem 2rem; }
-    .docs-main h1 { font-size: 1.5rem; }
-    .docs-main h2 { font-size: 1.2rem; }
-    .navbar-brand { font-size: 1rem; }
-    .navbar > .container-fluid { padding: 0 .5rem; }
-    pre.tree { font-size: .68rem; }
+  /* --- Landscape phone (height < 500px): cap sidebar, tighten --- */
+  @media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+    .docs-layout > .sidebar {
+      height: calc(100vh - var(--docs-nav-h));
+      max-height: calc(100vh - var(--docs-nav-h));
+    }
+    .docs-main { padding-top: .75rem; padding-bottom: 1.5rem; }
+    .docs-hero h1 { font-size: 1.5rem; }
   }
 
-  /* Print: hide sidebar */
+  /* --- Small phones (≤480px): tighter everything --- */
+  @media (max-width: 480px) {
+    .navbar > .container-fluid { padding: 0 .5rem; }
+    .sidebar-toggle-label { display: none; }   /* icon only on tiny screens */
+    .docs-main h1 { line-height: 1.2; }
+  }
+
+  /* --- Very wide screens (≥1600px): cap content width, more breathing room --- */
+  @media (min-width: 1600px) {
+    .docs-layout { grid-template-columns: 300px minmax(0, 1fr); }
+    .docs-main { max-width: 1400px; }
+  }
+
+  /* --- Reduced motion: kill transitions --- */
+  @media (prefers-reduced-motion: reduce) {
+    .docs-layout > .sidebar,
+    body.sidebar-open::after { transition: none; animation: none; }
+  }
+
+  /* --- Print: hide chrome --- */
   @media print {
     .sidebar, #sidebarToggle, #themeToggle { display: none !important; }
     .docs-layout { grid-template-columns: 1fr; }

@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0284c7" />
 <title>AuraPHP · AI-Made · Credits</title>
 <meta name="description" content="AuraPHP framework documentation — AI-Made · Credits." />
 <link rel="stylesheet" href="public/css/ownstrap.css" />
@@ -10,18 +11,19 @@
 <link rel="stylesheet" href="public/css/ownstrap-docs.css" />
 </head>
 <body class="theme-light">
-<nav class="navbar">
+<nav class="navbar" id="docsNavbar">
   <div class="container-fluid d-flex align-items-center justify-content-between">
     <div class="d-flex align-items-center" style="gap:.5rem;">
-      <button id="sidebarToggle" class="btn btn-sm btn-outline-primary d-lg-none" type="button" aria-label="Toggle sidebar" aria-controls="docsSidebar">
-        <span aria-hidden="true">☰</span>
+      <button id="sidebarToggle" class="sidebar-toggle-btn" type="button" aria-label="Toggle sidebar" aria-controls="docsSidebar" aria-expanded="false">
+        <span class="sidebar-toggle-icon" aria-hidden="true">☰</span>
+        <span class="sidebar-toggle-label d-none d-sm-inline">Menu</span>
       </button>
-      <a href="index.html" class="navbar-brand">AuraPHP <span class="text-muted fw-normal small d-none d-sm-inline">· Docs</span></a>
+      <a href="index.html" class="navbar-brand">AuraPHP <span class="text-muted fw-normal small d-none d-md-inline">· Docs</span></a>
     </div>
     <div class="navbar-nav d-flex align-items-center" style="gap:.25rem; flex-direction:row;">
-      <a class="nav-link d-none d-md-inline" href="cli.html">CLI</a>
-      <a class="nav-link d-none d-md-inline" href="management.html">Management</a>
-      <a class="nav-link d-none d-md-inline" href="ownstrap.html">OwnStrap</a>
+      <a class="nav-link d-none d-lg-inline" href="cli.html">CLI</a>
+      <a class="nav-link d-none d-lg-inline" href="management.html">Management</a>
+      <a class="nav-link d-none d-lg-inline" href="ownstrap.html">OwnStrap</a>
       <a class="nav-link d-none d-sm-inline" href="https://github.com/kernelk14/aura" rel="noopener">GitHub</a>
       <button id="themeToggle" class="btn btn-sm btn-outline-primary ms-2" type="button" aria-label="Toggle theme">
         <span id="themeIcon">☾</span> <span id="themeLabel" class="d-none d-sm-inline">Dark</span>
@@ -227,32 +229,62 @@ if (themeBtn) {
   });
 }
 
-// Mobile sidebar drawer (hamburger toggle + backdrop + auto-close)
+// Mobile sidebar drawer (hamburger toggle + backdrop + swipe gestures)
 (function () {
   var btn = document.getElementById('sidebarToggle');
   if (!btn) return;
-  function close() { document.body.classList.remove('sidebar-open'); }
-  function toggle() { document.body.classList.toggle('sidebar-open'); }
+  function syncAria() {
+    var open = document.body.classList.contains('sidebar-open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  function close() { document.body.classList.remove('sidebar-open'); syncAria(); }
+  function open_() { document.body.classList.add('sidebar-open');    syncAria(); }
+  function toggle() { document.body.classList.toggle('sidebar-open'); syncAria(); }
+
   btn.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
-  // Close on backdrop / outside click
   document.addEventListener('click', function (e) {
     if (!document.body.classList.contains('sidebar-open')) return;
     if (e.target.closest('.sidebar') || e.target.closest('#sidebarToggle')) return;
     close();
   });
-  // Close when a sidebar link is tapped
   document.querySelectorAll('.sidebar a').forEach(function (a) {
     a.addEventListener('click', close);
   });
-  // Close on Escape
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') close();
   });
-  // Close when the viewport grows past the mobile breakpoint
   var mq = window.matchMedia('(min-width: 901px)');
   var onChange = function (ev) { if (ev.matches) close(); };
   if (mq.addEventListener) mq.addEventListener('change', onChange);
   else if (mq.addListener) mq.addListener(onChange);
+
+  // Swipe gestures: edge-swipe-right to open, swipe-left on sidebar to close
+  var startX = 0, startY = 0, startT = 0, tracking = false;
+  var SWIPE_DIST = 50;   // px
+  var SWIPE_TIME = 500;  // ms
+  var EDGE_WIDTH = 30;   // px from left edge that triggers open
+  document.addEventListener('touchstart', function (e) {
+    if (e.touches.length !== 1) return;
+    var t = e.touches[0];
+    startX = t.clientX; startY = t.clientY; startT = Date.now(); tracking = true;
+  }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (!tracking) return;
+    tracking = false;
+    var t = (e.changedTouches && e.changedTouches[0]) || null;
+    if (!t) return;
+    var dx = t.clientX - startX;
+    var dy = t.clientY - startY;
+    var dt = Date.now() - startT;
+    if (dt > SWIPE_TIME) return;
+    if (Math.abs(dy) > Math.abs(dx)) return;          // mostly vertical, ignore
+    if (Math.abs(dx) < SWIPE_DIST) return;
+    var open = document.body.classList.contains('sidebar-open');
+    if (!open && dx > 0 && startX <= EDGE_WIDTH) open_();   // swipe-right from left edge
+    if (open && dx < 0) close();                             // swipe-left while open
+  }, { passive: true });
+
+  syncAria();
 })();
 </script>
 
