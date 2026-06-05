@@ -168,7 +168,7 @@
     display: grid; grid-template-columns: 260px 1fr;
     gap: .35rem .9rem; margin: .75rem 0; font-size: .875rem;
   }
-  .api .name { color: var(--docs-link); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .82rem; }
+  .api .name { color: var(--docs-link); font-family: var(--font-monospace); font-size: .82rem; }
   .api .desc { color: var(--docs-fg-soft); }
   .api .desc code { background: var(--docs-bg-soft); border: 1px solid var(--docs-border); color: var(--docs-fg); }
 
@@ -197,11 +197,11 @@
   .table-wrap tr:last-child td { border-bottom: 0; }
   .table-wrap code { background: var(--docs-bg-soft); border-color: var(--docs-border); color: var(--docs-fg); padding: 1px 5px; }
 
-  /* Tree widget (file structure) */
-  .tree { background: var(--docs-code-bg); color: #cbd5e1; padding: 1rem; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .8rem; line-height: 1.6; overflow-x: auto; border: 1px solid #1e293b; }
-  .tree .d  { color: #7dd3fc; }
-  .tree .f  { color: #fde68a; }
-  .tree .cm { color: #64748b; }
+  /* Tree widget (file structure) — <pre> preserves whitespace, spans add colour */
+  pre.tree { background: var(--docs-code-bg); color: var(--docs-code-fg); padding: 1rem; border-radius: 8px; font-family: var(--font-monospace); font-size: .8rem; line-height: 1.6; overflow-x: auto; border: 1px solid var(--docs-border); margin: 0; }
+  pre.tree .d  { color: #7dd3fc; }
+  pre.tree .f  { color: #fde68a; }
+  pre.tree .cm { color: #64748b; font-style: italic; }
 
   /* Card adjustments in dark mode (handled by base .card rule above) */
 
@@ -338,7 +338,7 @@
 <p><strong>OwnStrap</strong> is a zero-dependency CSS/JS framework bundled with AuraPHP. It's a custom alternative to Bootstrap with <strong>300+ utility classes</strong> and <strong>10+ interactive components</strong>, delivered as plain files (no build step).</p>
 <h3>Files (relative to <code>public/</code>)</h3>
 <ul>
-<li><code>css/ownstrap.css</code> — 2,999 lines (main)</li>
+<li><code>css/ownstrap.css</code> — 3,443 lines (main)</li>
 <li><code>css/ownstrap-colors.css</code> — 674 lines (color palette)</li>
 <li><code>js/ownstrap.js</code> — 1,152 lines (class <code>OwnStrap</code>, instantiated as <code>const OS = new OwnStrap();</code>)</li>
 <li><code>css/fonts/Fira_Sans/</code> — 17 weights of Fira Sans</li>

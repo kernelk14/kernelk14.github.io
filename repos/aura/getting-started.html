@@ -168,7 +168,7 @@
     display: grid; grid-template-columns: 260px 1fr;
     gap: .35rem .9rem; margin: .75rem 0; font-size: .875rem;
   }
-  .api .name { color: var(--docs-link); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .82rem; }
+  .api .name { color: var(--docs-link); font-family: var(--font-monospace); font-size: .82rem; }
   .api .desc { color: var(--docs-fg-soft); }
   .api .desc code { background: var(--docs-bg-soft); border: 1px solid var(--docs-border); color: var(--docs-fg); }
 
@@ -197,11 +197,11 @@
   .table-wrap tr:last-child td { border-bottom: 0; }
   .table-wrap code { background: var(--docs-bg-soft); border-color: var(--docs-border); color: var(--docs-fg); padding: 1px 5px; }
 
-  /* Tree widget (file structure) */
-  .tree { background: var(--docs-code-bg); color: #cbd5e1; padding: 1rem; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .8rem; line-height: 1.6; overflow-x: auto; border: 1px solid #1e293b; }
-  .tree .d  { color: #7dd3fc; }
-  .tree .f  { color: #fde68a; }
-  .tree .cm { color: #64748b; }
+  /* Tree widget (file structure) — <pre> preserves whitespace, spans add colour */
+  pre.tree { background: var(--docs-code-bg); color: var(--docs-code-fg); padding: 1rem; border-radius: 8px; font-family: var(--font-monospace); font-size: .8rem; line-height: 1.6; overflow-x: auto; border: 1px solid var(--docs-border); margin: 0; }
+  pre.tree .d  { color: #7dd3fc; }
+  pre.tree .f  { color: #fde68a; }
+  pre.tree .cm { color: #64748b; font-style: italic; }
 
   /* Card adjustments in dark mode (handled by base .card rule above) */
 
@@ -378,47 +378,55 @@ php aura serve</code></pre>
 <span class="t">&lt;/div&gt;</span></code></pre>
 <p>That's it. Hit <code>http://127.0.0.1:8080/hello</code> and you'll see your page rendered inside the standard layout (with OwnStrap CSS, navbar, and theme toggle).</p></section>
 <section id="structure"><h2>Directory Structure</h2>
-<div class="tree"><span class="d">auraphp/</span>
-├── <span class="f">aura</span>                        <span class="cm"># CLI executable (single-file PHP)</span>
-├── <span class="f">index.php</span>                  <span class="cm"># Front controller / entry point</span>
+<p>AuraPHP ships as a small, flat project. The directories you actually edit are <code>site/</code> and <code>system/config/</code>; the rest of <code>system/</code> is the framework core.</p>
+<pre class="tree"><span class="d">auraphp/</span>
+├── <span class="f">aura</span>                        <span class="cm"># CLI executable (1,842-line single-file PHP)</span>
+├── <span class="f">index.php</span>                  <span class="cm"># Front controller / entry point (161 lines)</span>
 ├── <span class="f">composer.json</span>             <span class="cm"># PSR-4 autoload + bin + scripts</span>
 ├── <span class="f">package.json</span>              <span class="cm"># Frontend tooling metadata</span>
+├── <span class="f">package-lock.json</span>         <span class="cm"># Locked dependency tree</span>
 ├── <span class="f">.htaccess</span>                 <span class="cm"># Apache rewrite → index.php</span>
+├── <span class="f">.gitignore</span>                <span class="cm"># Ignores node_modules, .env, *.log, .crush</span>
 ├── <span class="d">public/</span>                    <span class="cm"># Web-accessible assets (CSS/JS/fonts)</span>
 │   ├── <span class="d">css/</span>
-│   │   ├── <span class="f">ownstrap.css</span>          <span class="cm"># Main CSS framework (2,999 lines)</span>
+│   │   ├── <span class="f">ownstrap.css</span>          <span class="cm"># Main CSS framework (3,443 lines, ~85 KB)</span>
 │   │   ├── <span class="f">ownstrap-colors.css</span>   <span class="cm"># Color palette (674 lines)</span>
-│   │   └── <span class="d">fonts/</span>                <span class="cm"># Fira Sans + Inter</span>
+│   │   └── <span class="d">fonts/</span>
+│   │       ├── <span class="d">Fira_Sans/</span>          <span class="cm"># Fira Sans — 18 files / 9 MB (sans + serif + mono)</span>
+│   │       ├── <span class="d">Inter/</span>              <span class="cm"># Inter — 58 files / 20 MB (variable + 17 static weights)</span>
+│   │       └── <span class="d">JetBrainsMono/</span>      <span class="cm"># JetBrains Mono Nerd Font — 4 files / 10 MB</span>
 │   └── <span class="d">js/</span>
-│       └── <span class="f">ownstrap.js</span>           <span class="cm"># OwnStrap JS class (1,152 lines)</span>
+│       └── <span class="f">ownstrap.js</span>           <span class="cm"># OwnStrap JS class (1,152 lines, ~28 KB)</span>
 ├── <span class="d">system/</span>                    <span class="cm"># Framework core (don't edit)</span>
-│   ├── <span class="d">core/</span>                    <span class="cm"># 22 AuraCore\ classes</span>
-│   ├── <span class="d">config/</span>
+│   ├── <span class="d">core/</span>                    <span class="cm"># 25 AuraCore\ classes</span>
+│   ├── <span class="d">config/</span>                  <span class="cm"># App config (edit these)</span>
 │   │   ├── <span class="f">config.php</span>           <span class="cm"># App config (base_url, etc.)</span>
 │   │   ├── <span class="f">database.php</span>         <span class="cm"># Multi-connection DB config</span>
 │   │   └── <span class="f">routes.php</span>           <span class="cm"># Route definitions</span>
 │   ├── <span class="d">helpers/</span>
-│   │   └── <span class="f">url_helper.php</span>       <span class="cm"># Global functions</span>
+│   │   └── <span class="f">url_helper.php</span>       <span class="cm"># Global functions (autoloaded)</span>
 │   └── <span class="d">installer-needs/</span>
 │       └── <span class="f">PostInstall.php</span>      <span class="cm"># Composer post-install hook</span>
-├── <span class="d">site/</span>                      <span class="cm"># Your application (M, V, C)</span>
-│   ├── <span class="d">controllers/</span>            <span class="cm"># SiteControllers\*</span>
-│   ├── <span class="d">models/</span>                 <span class="cm"># SiteModels\*</span>
+├── <span class="d">site/</span>                      <span class="cm"># Your application (M, V, C — edit freely)</span>
+│   ├── <span class="d">controllers/</span>            <span class="cm"># SiteControllers\  (welcome.php, etc.)</span>
+│   ├── <span class="d">models/</span>                 <span class="cm"># SiteModels\  (user_model.php, etc.)</span>
 │   ├── <span class="d">views/</span>                  <span class="cm"># Plain PHP templates</span>
-│   ├── <span class="d">templates/</span>              <span class="cm"># Reusable partials</span>
-│   ├── <span class="d">events/</span>                 <span class="cm"># SiteEvents\*</span>
-│   ├── <span class="d">listeners/</span>              <span class="cm"># SiteListeners\*</span>
-│   ├── <span class="d">middleware/</span>             <span class="cm"># SiteMiddleware\*</span>
-│   ├── <span class="d">requests/</span>               <span class="cm"># SiteRequests\*</span>
-│   ├── <span class="d">rules/</span>                  <span class="cm"># SiteRules\*</span>
-│   ├── <span class="d">scopes/</span>                 <span class="cm"># SiteScopes\*</span>
-│   ├── <span class="d">seeders/</span>                <span class="cm"># Seeder classes</span>
-│   ├── <span class="d">migrations/</span>             <span class="cm"># Migration classes</span>
-│   ├── <span class="d">commands/</span>               <span class="cm"># Custom CLI commands</span>
-│   ├── <span class="d">providers/</span>              <span class="cm"># Service providers</span>
-│   └── <span class="d">pages/management/</span>        <span class="cm"># Built-in admin UI (8 pages)</span>
+│   ├── <span class="d">templates/</span>              <span class="cm"># Reusable partials (navbar, sidebar, etc.)</span>
+│   ├── <span class="d">events/</span>                 <span class="cm"># SiteEvents\  (event classes)</span>
+│   ├── <span class="d">listeners/</span>              <span class="cm"># SiteListeners\  (event handlers)</span>
+│   ├── <span class="d">middleware/</span>             <span class="cm"># SiteMiddleware\  (request middleware)</span>
+│   ├── <span class="d">requests/</span>               <span class="cm"># SiteRequests\  (form-request validators)</span>
+│   ├── <span class="d">rules/</span>                  <span class="cm"># SiteRules\  (custom validation rules)</span>
+│   ├── <span class="d">scopes/</span>                 <span class="cm"># SiteScopes\  (model global scopes)</span>
+│   ├── <span class="d">commands/</span>               <span class="cm"># SiteCommands\  (custom CLI commands)</span>
+│   ├── <span class="d">providers/</span>              <span class="cm"># SiteProviders\  (service providers)</span>
+│   └── <span class="d">pages/management/</span>        <span class="cm"># Built-in admin UI (8 pages: dashboard, database, env, info, logs, migrations, routes, seeders)</span>
 └── <span class="d">storage/</span>
-    └── <span class="d">logs/</span>                   <span class="cm"># Logger writes YYYY-MM-DD.log files</span></div></section>
+    └── <span class="d">logs/</span>                   <span class="cm"># Logger writes YYYY-MM-DD.log files (auto-created)</span></pre>
+
+<div class="callout">
+  <strong>Repo files not part of the framework:</strong> the root also contains <code>README.md</code>, <code>README_OWNSTRAP.md</code>, <code>OWNSTRAP_FEATURES.md</code>, <code>OWNSTRAP_QUICKREF.md</code>, and <code>OWNSTRAP_SETUP.md</code> (dev documentation), a hidden <code>.crush/</code> cache, and any maintainer-only tooling. None of these are loaded by the framework at runtime — they are references for whoever maintains the project.
+</div></section>
 <section id="namespaces"><h2>Namespaces</h2>
 <div class="table-wrap"><table><thead><tr><th>Namespace</th><th>Path</th><th>Purpose</th></tr></thead><tbody>
 <tr><td><code>AuraCore\</code></td><td><code>system/core/</code></td><td>All 22 framework classes</td></tr>
