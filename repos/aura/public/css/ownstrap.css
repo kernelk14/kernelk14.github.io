@@ -8,6 +8,44 @@
   src: url(fonts/Inter/Inter-VariableFont_opsz\,wght.ttf);
 }
 
+/* JetBrains Mono Nerd Font — the project's monospaced font.
+   Four weights: Regular, Bold, Italic, BoldItalic. The "Mono" variants
+   are the proper monospaced cuts (vs the "Propo" proportional cuts). */
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url(fonts/JetBrainsMono/JetBrainsMonoNerdFontMono-Regular.ttf);
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url(fonts/JetBrainsMono/JetBrainsMonoNerdFontMono-Bold.ttf);
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url(fonts/JetBrainsMono/JetBrainsMonoNerdFontMono-Italic.ttf);
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url(fonts/JetBrainsMono/JetBrainsMonoNerdFontMono-BoldItalic.ttf);
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* The monospace stack: prefer JetBrains Mono, fall back to the OS
+   monospace face so the page still renders if the font fails to load. */
+:root {
+  --font-monospace: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -590,7 +628,7 @@ code {
   background-color: #f0f0e8;
   padding: 0.125rem 0.375rem;
   border-radius: 3px;
-  font-family: monospace;
+  font-family: var(--font-monospace);
   font-size: 0.875rem;
 }
 
@@ -598,7 +636,7 @@ pre {
   padding: 1rem;
   border-radius: 6px;
   overflow-x: auto;
-  font-family: monospace;
+  font-family: var(--font-monospace);
   font-size: 0.875rem;
   line-height: 1.5;
   background-color: #f5f5f0;
@@ -2354,7 +2392,7 @@ textarea.input-control {
 }
 
 .font-monospace {
-  font-family: monospace;
+  font-family: var(--font-monospace);
 }
 
 /* Float */
@@ -3347,6 +3385,59 @@ h2[id]:hover::before {
 .disabled {
   opacity: 0.5;
   pointer-events: none;
+}
+
+/* ─── Custom Scrollbar ─── */
+/* Thin, rounded scrollbar that matches the slate/sky palette.
+   Affects every scrollable element on the page (sidebar, code blocks,
+   overflow regions, the document itself). Two implementations:
+     - Webkit pseudo-elements (Chrome, Safari, Edge, Opera)
+     - Firefox scrollbar-width / scrollbar-color (no rounding in Firefox) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.15s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:active {
+  background-color: #0284c7;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+body {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+body.theme-dark ::-webkit-scrollbar-thumb {
+  background-color: #475569;
+  background-clip: padding-box;
+}
+body.theme-dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b;
+  background-clip: padding-box;
+}
+body.theme-dark ::-webkit-scrollbar-thumb:active {
+  background-color: #38bdf8;
+  background-clip: padding-box;
+}
+body.theme-dark {
+  scrollbar-color: #475569 transparent;
 }
 
 
